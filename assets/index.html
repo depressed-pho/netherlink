@@ -12,7 +12,6 @@
 
         <div class="uk-navbar-item uk-logo">
           Netherlink
-          <a href="" class="uk-icon-link" uk-icon="plus"></a>
         </div>
 
         <ul class="uk-navbar-nav">
@@ -52,26 +51,39 @@
     <div class="uk-container uk-margin">
       <div class="uk-card uk-card-body uk-card-default">
 
-        <div class="uk-flex uk-flex-bottom">
-          <form class="uk-form-stacked">
-            <label class="uk-form-label" for="world-chooser">
-              World:
-            </label>
-            <div class="uk-form-controls">
-              <!-- Using .uk-select here makes the select element
-                   behave like a block element, and I don't know how
-                   to change that.  -->
-              <select class="" id="world-chooser">
-                <option>foo</option>
-                <option>the world blah blah</option>
-              </select>
-              <a href="" class="" uk-icon="plus"
-                 title="Add a new world..."></a>
-              <a href="" class="uk-icon-link uk-disabled" uk-icon="trash"
-                 title="Delete the world..."></a>
+        <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
+          <div class="uk-navbar-left">
+            <div class="uk-navbar-item">
+              <form>
+                <label class="uk-form-label" for="world-chooser">
+                  World:
+                </label>
+                <!-- Using .uk-select here makes the select element
+                     behave like a block element, and I don't know how
+                     to change that.  -->
+                <select class="" id="world-chooser">
+                  <option>foo</option>
+                  <option>the world blah blah</option>
+                </select>
+                <a href="" class="" uk-icon="plus"
+                   title="Add a new world..."></a>
+                <a href="" class="uk-icon-link uk-disabled" uk-icon="trash"
+                   title="Delete the world..."></a>
+              </form>
             </div>
-          </form>
-        </div>
+          </div>
+
+          <div class="uk-navbar-right">
+            <div class="uk-navbar-item">
+              <button class="uk-button uk-button-default uk-button-small">
+                Export...
+              </button>
+              <button class="uk-button uk-button-default uk-button-small uk-margin-left">
+                Import...
+              </button>
+            </div>
+          </div>
+        </nav>
 
         <hr />
 
