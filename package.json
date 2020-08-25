@@ -1,14 +1,14 @@
 {
-  "name": "netherlinker",
+  "name": "netherlink",
   "version": "1.0.0",
   "description": "Web app to manage nether portals in Minecraft",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack --mode=production --progress",
     "clean": "rimraf dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "run-s build deploy:gh-pages",
     "deploy:gh-pages": "gh-pages -d dist",
-    "start": "webpack-dev-server --content-base dist"
+    "start": "webpack-dev-server --mode=development --content-base dist"
   },
   "keywords": [
     "Minecraft",
@@ -22,8 +22,13 @@
   },
   "devDependencies": {
     "@types/uikit": "^3.3.1",
+    "css-loader": "^4.2.2",
     "html-webpack-plugin": "^4.3.0",
+    "mini-css-extract-plugin": "^0.10.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
     "rimraf": "^3.0.2",
+    "sass": "^1.26.10",
+    "sass-loader": "^10.0.0",
     "terser-webpack-plugin": "^4.1.0",
     "ts-loader": "^8.0.2",
     "typescript": "^3.9.7",

@@ -5,7 +5,7 @@
             "*": [
                 "decl/*"
             ],
-            "netherlinker/*": [
+            "netherlink/*": [
                 "lib/*"
             ]
         },
