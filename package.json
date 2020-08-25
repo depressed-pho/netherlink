@@ -21,7 +21,6 @@
     "uikit": "^3.5.6"
   },
   "devDependencies": {
-    "@types/uikit": "^3.3.1",
     "css-loader": "^4.2.2",
     "html-webpack-plugin": "^4.3.0",
     "mini-css-extract-plugin": "^0.10.0",

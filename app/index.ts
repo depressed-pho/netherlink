@@ -1,6 +1,4 @@
-import UIkit from 'uikit';
-import Icons from 'uikit/dist/js/uikit-icons';
+import * as UIkit from 'uikit';
+import * as Icons from 'uikit/dist/js/uikit-icons';
 
-(UIkit.use as any)(Icons);
-
-UIkit.notification('Hello, world.');
+UIkit.use(Icons);
