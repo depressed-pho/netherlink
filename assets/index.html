@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>Netherlink</title>
   </head>
   <body>
@@ -52,7 +52,8 @@
     <div class="uk-container uk-container-expand uk-margin">
       <div class="uk-card uk-card-body uk-card-default">
 
-        <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
+        <!-- World selection, import, and export buttons -->
+        <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar="">
           <div class="uk-navbar-left">
             <div class="uk-navbar-item">
               <form>
@@ -86,18 +87,60 @@
           </div>
         </nav>
 
-        <div class="uk-child-width-expand uk-grid-collapse uk-text-center" uk-grid>
-          <div>
-            <div class="uk-card uk-card-default uk-card-body">Expand</div>
+        <!-- Portal lists and atlases -->
+        <div class="uk-child-width-expand uk-grid-collapse uk-grid-match" uk-grid="">
+          <!-- The column for portal list in Overworld -->
+          <div class="uk-card uk-card-default uk-card-body uk-padding-remove">
+            <!-- Vertical grid -->
+            <div class="uk-child-width-1-1" uk-grid="">
+              <!-- The 1st row (title) -->
+              <div>
+                Overworld:
+              </div>
+              <!-- The 2nd row (portal list) -->
+              <ul id="portals-overworld" class="uk-list uk-list-divider">
+                <li>List item 1</li>
+                <li>List item 2</li>
+                <li>List item 3</li>
+              </ul>
+              <!-- The 3rd row (buttons) -->
+              <div>
+                <a href="" class="" uk-icon="plus"
+                   title="Add a new portal..."></a>
+                <a href="" class="uk-icon-link uk-disabled" uk-icon="trash"
+                   title="Delete the world..."></a>
+              </div>
+            </div>
           </div>
+          <!-- The column for portal atlas for Overworld -->
           <div class="uk-width-1-3">
-            <div class="uk-card uk-card-default uk-card-body">1-3</div>
+            <div class="uk-card uk-card-default uk-card-body">
+              <canvas name="atlas-overworld" class="atlas" draggable="false" />
+            </div>
           </div>
+          <!-- The column for portal atlas for Nether -->
           <div class="uk-width-1-3">
-            <div class="uk-card uk-card-default uk-card-body">1-3</div>
+            <div class="uk-card uk-card-default uk-card-body">
+              <canvas name="atlas-nether" class="atlas" draggable="false" />
+            </div>
           </div>
+          <!-- The column for portal list in Nether -->
           <div>
-            <div class="uk-card uk-card-default uk-card-body">Expand</div>
+            <div class="uk-card uk-card-default uk-card-body">
+              Nether:
+            </div>
+          </div>
+        </div>
+
+        <!-- Coords and info -->
+        <div class="uk-grid-collapse uk-grid-match" uk-grid="">
+          <!-- Overworld -->
+          <div class="uk-width-1-2 uk-card uk-card-default uk-card-body">
+            Overworld
+          </div>
+          <!-- Nether -->
+          <div class="uk-width-1-2 uk-card uk-card-default uk-card-body">
+            Nether
           </div>
         </div>
 
@@ -106,4 +149,3 @@
 
   </body>
 </html>
-
