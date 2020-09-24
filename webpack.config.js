@@ -11,7 +11,8 @@ module.exports = (env, argv) => {
     let config = {
         entry: [
             './app/index.ts',
-            './assets/app.scss'
+            './assets/app.scss',
+            './assets/table.scss'
         ],
         output: {
             filename: 'bundle.js',

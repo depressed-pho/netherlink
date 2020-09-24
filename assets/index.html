@@ -91,26 +91,32 @@
         <div class="uk-child-width-expand uk-grid-collapse uk-grid-match" uk-grid="">
           <!-- The column for portal list in Overworld -->
           <div class="uk-card uk-card-default uk-card-body uk-padding-remove">
-            <!-- Vertical grid -->
-            <div class="uk-child-width-1-1" uk-grid="">
-              <!-- The 1st row (title) -->
-              <div>
+            <!-- The 1st row (portal list) -->
+            <table class="uk-table uk-table-divider uk-table-small scrollable">
+              <caption>
                 Overworld:
-              </div>
-              <!-- The 2nd row (portal list) -->
-              <ul id="portals-overworld" class="uk-list uk-list-divider">
-                <li>List item 1</li>
-                <li>List item 2</li>
-                <li>List item 3</li>
-              </ul>
-              <!-- The 3rd row (buttons) -->
-              <div>
                 <a href="" class="" uk-icon="plus"
                    title="Add a new portal..."></a>
                 <a href="" class="uk-icon-link uk-disabled" uk-icon="trash"
                    title="Delete the world..."></a>
-              </div>
-            </div>
+              </caption>
+              <thead>
+                <tr>
+                  <th>Coords</th>
+                  <th>Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="uk-text-nowrap">0, 0, 0</td>
+                  <td>Portal 1</td>
+                </tr>
+                <tr>
+                  <td class="uk-text-nowrap">100, 100, 100</td>
+                  <td>Portal 2</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <!-- The column for portal atlas for Overworld -->
           <div class="uk-width-1-3">

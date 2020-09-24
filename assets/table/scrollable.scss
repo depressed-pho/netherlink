@@ -1,0 +1,40 @@
+/* Tables with a scrollable tbody and a fixed header. See
+ * https://stackoverflow.com/a/29512692/3571336
+ *
+ * Note that you have to give the table container an explicit "height"
+ * in order for it to render properly. The table covers the entire
+ * container.
+ */
+.scrollable {
+    $scrollbar-width: 0.9em;
+
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    width: 100%;
+
+    caption {
+        /* caption takes the height it requires
+         * and it's not scaled when table is resized */
+        flex: 0 0 auto;
+    }
+    thead {
+        /* head takes the height it requires,
+         * and it's not scaled when table is resized */
+        flex: 0 0 auto;
+        width: calc(100% - #{$scrollbar-width});
+    }
+    tbody {
+        /* body takes all the remaining available space */
+        flex: 1 1 auto;
+        display: block;
+        overflow-y: scroll;
+        tr {
+            width: 100%;
+        }
+    }
+    thead, tbody tr {
+        display: table;
+        table-layout: fixed;
+    }
+}
