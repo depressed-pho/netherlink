@@ -1,5 +1,6 @@
 var path = require('path');
 var webpack = require('webpack');
+var {CleanWebpackPlugin} = require('clean-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 var OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -36,6 +37,7 @@ module.exports = (env, argv) => {
             ]
         },
         plugins: [
+            new CleanWebpackPlugin(),
             new HtmlWebpackPlugin({
                 inject: 'body',
                 minify: {
@@ -52,6 +54,10 @@ module.exports = (env, argv) => {
             }),
             new MiniCssExtractPlugin({
                 filename: "style.css"
+            }),
+            new webpack.ProvidePlugin({
+                $: 'jquery',
+                jQuery: 'jquery'
             })
         ],
         module: {
@@ -62,6 +68,7 @@ module.exports = (env, argv) => {
                     use: [
                         MiniCssExtractPlugin.loader,
                         "css-loader",
+                        "postcss-loader",
                         "sass-loader"
                     ],
                 }
