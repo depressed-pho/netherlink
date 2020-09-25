@@ -50,7 +50,8 @@
 
     <!-- The real page body -->
     <div class="uk-container uk-container-expand uk-margin">
-      <div class="uk-card uk-card-body uk-card-default">
+      <!-- THINKME: Maybe we should remove this uk-height-viewport -->
+      <div class="uk-card uk-card-body uk-card-default" uk-height-viewport="expand: true">
 
         <!-- World selection, import, and export buttons -->
         <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar="">
@@ -142,7 +143,15 @@
         <div class="uk-grid-collapse uk-grid-match" uk-grid="">
           <!-- Overworld -->
           <div class="uk-width-1-2 uk-card uk-card-default uk-card-body">
-            Overworld
+            <form>
+              Overworld
+              <label for="position-x">X:</label>
+              <input type="number" step="any" size="6" />
+              <label for="position-x">Y:</label>
+              <input type="number" step="any" size="6" />
+              <label for="position-x">Z:</label>
+              <input type="number" step="any" size="6" />
+            </form>
           </div>
           <!-- Nether -->
           <div class="uk-width-1-2 uk-card uk-card-default uk-card-body">
