@@ -5,7 +5,7 @@
  * in order for it to render properly. The table covers the entire
  * container.
  */
-.scrollable {
+table.nl-scrollable {
     $scrollbar-width: 0.9em;
 
     display: flex;

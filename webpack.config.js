@@ -71,6 +71,18 @@ module.exports = (env, argv) => {
                         "postcss-loader",
                         "sass-loader"
                     ],
+                },
+                {
+                    test: /\.(eot|svg|ttf|woff)$/i,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                            options: {
+                                limit: 10000,
+                                name: "assets/[hash].[ext]"
+                            },
+                        }
+                    ]
                 }
             ]
         }

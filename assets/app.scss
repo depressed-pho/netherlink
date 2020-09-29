@@ -1,3 +1,6 @@
+@import "_settings.scss";
 @import "~foundation-sites/scss/foundation.scss";
+@import "~@icon/foundation-icons/foundation-icons.css";
+@import "top-bar/humble.scss";
 
 @include foundation-everything;
