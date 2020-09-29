@@ -1,0 +1,13 @@
+.nl-top-bar-humble {
+    /* There doesn't seem to be a good way to override some global
+     * variables locally. Possibly Foundation mixins are badly
+     * designed? See:
+     * https://stackoverflow.com/questions/54525801/how-can-i-include-a-mixin-that-contains-a-variable-then-change-that-variables-v
+     */
+    $topbar-background: transparent;
+    @include top-bar-container;
+
+    &, ul {
+        background-color: $topbar-background;
+    }
+}

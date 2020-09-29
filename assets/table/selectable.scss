@@ -1,0 +1,6 @@
+/* Tables whose tbody elements are selectable. */
+table.nl-selectable {
+    td {
+        cursor: cell;
+    }
+}

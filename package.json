@@ -18,13 +18,21 @@
   "author": "PHO <pho@cielonegro.org>",
   "license": "CC0-1.0",
   "dependencies": {
-    "uikit": "^3.5.6"
+    "@icon/foundation-icons": "^3.0.0-alpha.3",
+    "foundation-sites": "^6.6.3",
+    "jquery": "^3.5.1",
+    "what-input": "^5.2.10"
   },
   "devDependencies": {
+    "autoprefixer": "^10.0.0",
+    "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^4.2.2",
+    "file-loader": "^6.1.0",
     "html-webpack-plugin": "^4.3.0",
     "mini-css-extract-plugin": "^0.10.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "postcss": "^8.0.9",
+    "postcss-loader": "^4.0.2",
     "rimraf": "^3.0.2",
     "sass": "^1.26.10",
     "sass-loader": "^10.0.0",
