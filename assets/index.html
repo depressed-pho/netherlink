@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
     <title>Netherlink</title>
@@ -69,6 +69,10 @@
               <i class="fi fi-plus"></i>
               Add...
             </button>
+            <button type="button" class="hollow button secondary">
+              <i class="fi fi-pencil"></i>
+              Rename...
+            </button>
             <button type="button" class="hollow button alert">
               <i class="fi fi-minus"></i>
               Delete...
@@ -89,7 +93,7 @@
           <!-- Overworld -->
           <div class="cell medium-6 large-6 grid-x">
             <!-- Portal list -->
-            <div class="cell small-5 card">
+            <div class="cell small-4 card">
               <table class="hover unstriped nl-selectable nl-scrollable">
                 <caption>
                   Overworld:
@@ -97,7 +101,7 @@
                   <a href="#" title="Add new portal...">
                     <i class="fi fi-plus"></i>
                   </a>
-                  <a href="#" title="Delete the portal...">
+                  <a href="#" title="Delete the portal">
                     <i class="fi fi-minus"></i>
                   </a>
                 </caption>
@@ -120,16 +124,16 @@
               </table>
             </div>
             <!-- Atlas -->
-            <div class="cell small-7 card">
+            <div class="cell auto card">
               2
             </div>
           </div>
           <!-- Nether -->
           <div class="cell medium-6 large-6 grid-x">
-            <div class="cell small-7 card">
+            <div class="cell auto card">
               3
             </div>
-            <div class="cell small-5 card">
+            <div class="cell small-4 card">
               4
             </div>
           </div>
@@ -138,7 +142,7 @@
         <!-- Coords and info -->
         <div class="cell grid-x grid-padding-x grid-padding-y" data-equalizer="" data-equalize-on="medium">
           <div class="cell medium-6 large-6">
-            <div class="card">
+            <div class="card" data-equalizer-watch="">
               <div class="card-section">
                 <div class="grid-x grid-margin-x">
                   <label class="cell shrink middle">Overworld:</label>
@@ -162,7 +166,7 @@
             </div>
           </div>
           <div class="cell medium-6 large-6">
-            <div class="card">
+            <div class="card" data-equalizer-watch="">
               <div class="card-section">
                 2
               </div>
