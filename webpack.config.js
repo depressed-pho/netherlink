@@ -21,7 +21,10 @@ module.exports = (env, argv) => {
         },
         devtool: 'source-map',
         resolve: {
-            extensions: ['.ts', '.tsx', '.js']
+            extensions: ['.ts', '.tsx', '.js'],
+            alias: {
+                'netherlink': path.resolve(__dirname, 'lib')
+            }
         },
         optimization: {
             minimizer: [
