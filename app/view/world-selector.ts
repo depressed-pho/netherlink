@@ -9,22 +9,22 @@ export class WorldSelectorView {
 
         /* The world selector control is synchronized with the world
          * list property. */
-        model.worlds.onValue(m => this.refreshList(m));
+        model.worlds.onValue(s => this.refreshList(s));
     }
 
-    private refreshList(map: Map<WorldID, World>): void {
-        /* The map is of course unordered but we want the list to be
+    private refreshList(set: Set<World>): void {
+        /* The set is of course unordered but we want the list to be
          * sorted by creation time. The world ID is UUID v1 so we can
-         * just sort them by ID. */
-        const worlds = Array.from(map).sort(
-            ([id1, ], [id2, ]) => id1 < id2 ? -1 : id1 > id2 ? 1 : 0);
+         * sort them by their time stamp. */
+        const worlds = Array.from(set).sort(
+            (w1, w2) => World.compare(w1, w2));
 
         while (this.selectElem.firstElementChild) {
             this.selectElem.firstElementChild.remove();
         }
-        for (const [id, world] of worlds) {
+        for (const world of worlds) {
             const opt = document.createElement("option");
-            opt.value = id;
+            opt.value = world.id;
             opt.text  = world.name;
             this.selectElem.add(opt);
         }

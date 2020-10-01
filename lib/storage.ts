@@ -4,7 +4,7 @@ import { World, WorldID } from 'netherlink/world';
  * else). The backend can be, for example, Local Storage, IndexedDB,
  * or even cookies (ugh).
  */
-export interface NLStorage extends Iterable<[WorldID, World]> {
+export interface NLStorage extends Iterable<World> {
 
     /** Storages aren't always available. For example, the local
      * storage might be disabled by a browser config. For this reason,

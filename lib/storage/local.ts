@@ -42,8 +42,8 @@ export class LocalStorage implements NLStorage {
         return this.worlds.get(this._currentWorld)!;
     }
 
-    public [Symbol.iterator](): Iterator<[WorldID, World]> {
-        return this.worlds.entries();
+    public [Symbol.iterator](): Iterator<World> {
+        return this.worlds.values();
     }
 }
 
