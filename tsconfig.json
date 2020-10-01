@@ -10,8 +10,11 @@
             ]
         },
         "alwaysStrict": true,
-        "strictNullChecks": true,
-        "target": "ES5",
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "strict": true,
+        "target": "ES6",
+        "module": "CommonJS",
         "sourceMap": true
     }
 }

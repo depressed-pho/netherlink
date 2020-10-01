@@ -2,7 +2,7 @@ import { PortalOnOverworld, PortalInNether } from 'netherlink/portal';
 import { PortalMap } from 'netherlink/portal/map';
 import * as uuid from 'uuid';
 
-export type WorldID = string; // UUID
+export type WorldID = string; // UUID v1
 
 export class World {
     public readonly id: WorldID;

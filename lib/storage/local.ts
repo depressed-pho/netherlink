@@ -28,6 +28,10 @@ export class LocalStorage implements NLStorage {
             this.worlds.set(w.id, w);
             this._currentWorld = w.id;
         }
+        else {
+            // FIXME: Load this.
+            this._currentWorld = this.worlds.keys().next().value;
+        }
     }
 
     get isAvailable(): boolean {

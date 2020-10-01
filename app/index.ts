@@ -1,10 +1,15 @@
 import 'foundation-sites';
-import $ from 'jquery';
-//import { NLStorage } from 'netherlink/storage';
+import $ = require('jquery');
+import { WorldSelectorModel } from './model/world-selector';
+import { NLStorage } from 'netherlink/storage';
 import * as LocalStorage from 'netherlink/storage/local';
+import { WorldSelectorView } from './view/world-selector';
 
 $(document).foundation();
 
 window.addEventListener('DOMContentLoaded', (ev) => {
-    console.log(LocalStorage.instance.currentWorld);
+    const storage: NLStorage = LocalStorage.instance;
+
+    const worldSelM = new WorldSelectorModel(storage);
+    const worldSelV = new WorldSelectorView(worldSelM);
 });

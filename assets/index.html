@@ -60,7 +60,7 @@
           <li class="menu-text">
             <span class="input-group">
               <span class="input-group-label">World</span>
-              <select class="input-group-field" id="world-chooser">
+              <select class="input-group-field" id="world-selector">
                 <option>foo</option>
                 <option>the world blah blah</option>
               </select>
@@ -71,13 +71,13 @@
               <i class="fi fi-plus"></i>
               Add...
             </button>
-            <button type="button" class="hollow button secondary">
-              <i class="fi fi-pencil"></i>
-              Rename...
-            </button>
             <button type="button" class="hollow button alert">
               <i class="fi fi-minus"></i>
               Delete...
+            </button>
+            <button type="button" class="hollow button secondary">
+              <i class="fi fi-pencil"></i>
+              Rename...
             </button>
             <button type="button" class="hollow button secondary">
               <i class="fi fi-download"></i>
@@ -103,8 +103,11 @@
                   <a href="#" title="Add new portal...">
                     <i class="fi fi-plus"></i>
                   </a>
-                  <a href="#" title="Delete the portal">
+                  <a href="#" title="Delete the portal...">
                     <i class="fi fi-minus"></i>
+                  </a>
+                  <a href="#" title="Edit the portal...">
+                    <i class="fi fi-pencil"></i>
                   </a>
                 </caption>
                 <thead>
