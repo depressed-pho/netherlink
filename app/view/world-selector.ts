@@ -1,15 +1,28 @@
 import { World, WorldID } from 'netherlink/world';
 import { WorldSelectorModel } from '../model/world-selector';
+import { ModalAddWorldView } from './world-selector/add';
 
 export class WorldSelectorView {
-    private readonly selectElem: HTMLSelectElement;
+    private readonly model: WorldSelectorModel;
+
+    private readonly selWorld: HTMLSelectElement;
+
+    private readonly btnAdd: HTMLButtonElement;
+    private readonly modalAdd: ModalAddWorldView;
 
     public constructor(model: WorldSelectorModel) {
-        this.selectElem = document.getElementById("world-selector")! as HTMLSelectElement;
+        this.model = model;
 
         /* The world selector control is synchronized with the world
          * list property. */
+        this.selWorld = document.getElementById("selWorld")! as HTMLSelectElement;
         model.worlds.onValue(s => this.refreshList(s));
+
+        /* The "Add..." button is always enabled and will open a modal
+         * window when clicked. */
+        this.btnAdd   = document.getElementById("btnAddWorld")! as HTMLButtonElement;
+        this.modalAdd = new ModalAddWorldView(model);
+        this.btnAdd.addEventListener("click", ev => this.modalAdd.open());
     }
 
     private refreshList(set: Set<World>): void {
@@ -19,14 +32,14 @@ export class WorldSelectorView {
         const worlds = Array.from(set).sort(
             (w1, w2) => World.compare(w1, w2));
 
-        while (this.selectElem.firstElementChild) {
-            this.selectElem.firstElementChild.remove();
+        while (this.selWorld.firstElementChild) {
+            this.selWorld.firstElementChild.remove();
         }
         for (const world of worlds) {
             const opt = document.createElement("option");
             opt.value = world.id;
             opt.text  = world.name;
-            this.selectElem.add(opt);
+            this.selWorld.add(opt);
         }
     }
 }

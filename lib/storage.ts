@@ -16,4 +16,11 @@ export interface NLStorage extends Iterable<World> {
      * files. There always has to be one world that is selected.
      */
     currentWorld: World;
+
+    /** When a new world is to be created, a good candidate for the
+     * new world should be given to user. We don't really care if two
+     * worlds have the same name, but it should be best avoided not to
+     * confuse users.
+     */
+    newWorldNameCandidate: string;
 }

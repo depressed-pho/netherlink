@@ -83,7 +83,19 @@ module.exports = (env, argv) => {
                             options: {
                                 limit: 10000,
                                 name: "assets/[hash].[ext]"
-                            },
+                            }
+                        }
+                    ]
+                },
+                {
+                    test: /\.html/i,
+                    use: [
+                        {
+                            loader: 'html-loader',
+                            options: {
+                                minimize: true,
+                                esModule: true
+                            }
                         }
                     ]
                 }

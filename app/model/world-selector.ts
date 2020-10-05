@@ -15,4 +15,8 @@ export class WorldSelectorModel {
         this.worldsBus = new Bacon.Bus<Set<World>>();
         this.worlds    = this.worldsBus.toProperty(new Set<World>(storage));
     }
+
+    public get newWorldNameCandidate(): string {
+        return this.storage.newWorldNameCandidate;
+    }
 }

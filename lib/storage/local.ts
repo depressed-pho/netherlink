@@ -22,8 +22,7 @@ export class LocalStorage implements NLStorage {
 
         /* Storages must always be non-empty. */
         if (this.worlds.size == 0) {
-            // THINKME: Should we really do this here...?
-            const w = new World("World #1");
+            const w = new World(this.newWorldNameCandidate);
 
             this.worlds.set(w.id, w);
             this._currentWorld = w.id;
@@ -44,6 +43,20 @@ export class LocalStorage implements NLStorage {
 
     public [Symbol.iterator](): Iterator<World> {
         return this.worlds.values();
+    }
+
+    get newWorldNameCandidate(): string {
+        if (!this.worlds.has(`World #${this.worlds.size + 1}`)) {
+            return `World #${this.worlds.size + 1}`;
+        }
+
+        for (let i = 1;; i++) {
+            if (!this.worlds.has(`World #${i}`)) {
+                return `World #${i}`;
+            }
+        }
+        /* TypeScript detects that the function evaluation never
+         * reaches here!? That's amazing! */
     }
 }
 
