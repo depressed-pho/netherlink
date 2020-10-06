@@ -4,7 +4,7 @@ import { World, WorldID } from 'netherlink/world';
 export class LocalStorage implements NLStorage {
     private backend?: Storage;
     private worlds: Map<WorldID, World>;
-    private _currentWorld: WorldID;
+    private _activeWorld: WorldID;
 
     public constructor() {
         /* The local storage isn't always available. The browser may
@@ -25,11 +25,11 @@ export class LocalStorage implements NLStorage {
             const w = new World(this.newWorldNameCandidate);
 
             this.worlds.set(w.id, w);
-            this._currentWorld = w.id;
+            this._activeWorld = w.id;
         }
         else {
             // FIXME: Load this.
-            this._currentWorld = this.worlds.keys().next().value;
+            this._activeWorld = this.worlds.keys().next().value;
         }
     }
 
@@ -37,8 +37,13 @@ export class LocalStorage implements NLStorage {
         return !!this.backend;
     }
 
-    get currentWorld(): World {
-        return this.worlds.get(this._currentWorld)!;
+    get activeWorld(): World {
+        return this.worlds.get(this._activeWorld)!;
+    }
+
+    set activeWorld(w: World) {
+        // FIXME: save it
+        this._activeWorld = w.id;
     }
 
     public [Symbol.iterator](): Iterator<World> {
@@ -57,6 +62,21 @@ export class LocalStorage implements NLStorage {
         }
         /* TypeScript detects that the function evaluation never
          * reaches here!? That's amazing! */
+    }
+
+    public loadWorld(id: string): World {
+        const w = this.worlds.get(id);
+        if (w) {
+            return w;
+        }
+        else {
+            throw new Error(`World ${id} not found`);
+        }
+    }
+
+    public storeWorld(w: World) {
+        // FIXME: save it.
+        this.worlds.set(w.id, w);
     }
 }
 

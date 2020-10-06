@@ -13,9 +13,10 @@ export interface NLStorage extends Iterable<World> {
     readonly isAvailable: boolean;
 
     /** We hate it when our storage contains absolutely no world
-     * files. There always has to be one world that is selected.
+     * files. There always has to be one world that is selected. Note
+     * that setting this property will also stores the world.
      */
-    currentWorld: World;
+    activeWorld: World;
 
     /** When a new world is to be created, a good candidate for the
      * new world should be given to user. We don't really care if two
@@ -23,4 +24,14 @@ export interface NLStorage extends Iterable<World> {
      * confuse users.
      */
     newWorldNameCandidate: string;
+
+    /** Load a world. If no corresponding worlds are stored, it will
+     * raise an error.
+     */
+    loadWorld(id: string): World;
+
+    /** Store a world. It can either be a new world, or an existing
+     * one.
+     */
+    storeWorld(w: World): void;
 }

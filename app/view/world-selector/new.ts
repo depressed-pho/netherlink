@@ -1,12 +1,12 @@
 import 'foundation-sites';
 import $ = require('jquery');
-import htmlAdd from './add.html';
+import htmlNew from './new.html';
 import { WorldSelectorModel } from '../../model/world-selector';
 
-export class ModalAddWorldView {
+export class ModalNewWorldView {
     private readonly model: WorldSelectorModel;
 
-    private readonly modalAdd: HTMLDivElement;
+    private readonly modalNew: HTMLDivElement;
     private readonly form: HTMLFormElement;
 
     private readonly fldName: HTMLInputElement;
@@ -17,18 +17,18 @@ export class ModalAddWorldView {
         this.model = model;
 
         let addListeners = false;
-        if (!document.getElementById("modalAddWorld")) {
+        if (!document.getElementById("modalNewWorld")) {
             const body = document.querySelector("html > body")!;
-            body.insertAdjacentHTML("beforeend", htmlAdd);
-            $("#modalAddWorld").foundation();
+            body.insertAdjacentHTML("beforeend", htmlNew);
+            $("#modalNewWorld").foundation();
             addListeners = true;
         }
 
-        this.modalAdd  = document.getElementById("modalAddWorld")! as HTMLDivElement;
-        this.form      = this.modalAdd.querySelector("form")! as HTMLFormElement;
-        this.fldName   = this.modalAdd.querySelector("input[name='name']")! as HTMLInputElement;
-        this.btnCancel = this.modalAdd.querySelector("button[name='cancel']")! as HTMLButtonElement;
-        this.btnSubmit = this.modalAdd.querySelector("button[type='submit']")! as HTMLButtonElement;
+        this.modalNew  = document.getElementById("modalNewWorld")! as HTMLDivElement;
+        this.form      = this.modalNew.querySelector("form")! as HTMLFormElement;
+        this.fldName   = this.modalNew.querySelector("input[name='name']")! as HTMLInputElement;
+        this.btnCancel = this.modalNew.querySelector("button[name='cancel']")! as HTMLButtonElement;
+        this.btnSubmit = this.modalNew.querySelector("button[type='submit']")! as HTMLButtonElement;
 
         if (addListeners) {
             this.btnCancel.addEventListener("click", ev => this.close());
@@ -42,17 +42,19 @@ export class ModalAddWorldView {
     public open(): void {
         this.fldName.value = this.model.newWorldNameCandidate;
 
-        $(this.modalAdd).foundation("open");
+        $(this.modalNew).foundation("open");
         this.fldName.focus();
     }
 
     public close(): void {
-        $(this.modalAdd).foundation("close");
+        $(this.modalNew).foundation("close");
     }
 
     private submit(): void {
-        const name: string = this.fldName.value;
+        const name  = this.fldName.value;
+        const world = this.model.newWorld(name);
 
-        console.log("FIXME", name);
+        this.model.activateWorld(world);
+        this.close();
     }
 }
