@@ -28,10 +28,16 @@ export interface NLStorage extends Iterable<World> {
     /** Load a world. If no corresponding worlds are stored, it will
      * raise an error.
      */
-    loadWorld(id: string): World;
+    loadWorld(id: WorldID): World;
 
     /** Store a world. It can either be a new world, or an existing
      * one.
      */
     storeWorld(w: World): void;
+
+    /** Delete a world from the storage. If no corresponding worlds
+     * are stored, it will do nothing. The world to be deleted must be
+     * an inactive one, or otherwise it raises an error.
+     */
+    deleteWorld(id: WorldID): void;
 }

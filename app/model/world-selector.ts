@@ -36,7 +36,7 @@ export class WorldSelectorModel {
         return w;
     }
 
-    public activateWorld(id: string): void;
+    public activateWorld(id: WorldID): void;
     public activateWorld(w: World): void;
     public activateWorld(x: any): void {
         let w: World;
@@ -53,5 +53,10 @@ export class WorldSelectorModel {
 
         this.storage.activeWorld = w;
         this.activeWorldBus.push(w);
+    }
+
+    public deleteWorld(id: WorldID): void {
+        this.storage.deleteWorld(id);
+        this.worldsBus.push(new Set<World>(this.storage));
     }
 }

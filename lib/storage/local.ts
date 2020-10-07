@@ -64,7 +64,7 @@ export class LocalStorage implements NLStorage {
          * reaches here!? That's amazing! */
     }
 
-    public loadWorld(id: string): World {
+    public loadWorld(id: WorldID): World {
         const w = this.worlds.get(id);
         if (w) {
             return w;
@@ -77,6 +77,15 @@ export class LocalStorage implements NLStorage {
     public storeWorld(w: World) {
         // FIXME: save it.
         this.worlds.set(w.id, w);
+    }
+
+    public deleteWorld(id: WorldID): void {
+        if (this._activeWorld == id) {
+            throw new Error(`World ${id} is currently active`);
+        }
+
+        // FIXME: delete it.
+        this.worlds.delete(id);
     }
 }
 

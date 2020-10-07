@@ -40,7 +40,11 @@ export class ModalNewWorldView {
     }
 
     public open(): void {
-        this.fldName.value = this.model.newWorldNameCandidate;
+        if (this.fldName.value == "") {
+            /* Only put in the candidate if the user hasn't entered
+             * nor submitted one. */
+            this.fldName.value = this.model.newWorldNameCandidate;
+        }
 
         $(this.modalNew).foundation("open");
         this.fldName.focus();
@@ -56,5 +60,6 @@ export class ModalNewWorldView {
 
         this.model.activateWorld(world);
         this.close();
+        this.fldName.value = "";
     }
 }
