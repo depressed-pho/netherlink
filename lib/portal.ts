@@ -1,5 +1,6 @@
 import { Dimension } from 'netherlink/dimension';
 import { Point } from 'netherlink/point';
+import { World } from 'netherlink/world';
 import Color = require('color');
 
 export class Portal<D extends Dimension> {
@@ -16,6 +17,15 @@ export class Portal<D extends Dimension> {
         this.location  = location;
         this.name      = name;
         this.color     = color;
+    }
+
+    public destination<D1 extends Dimension>(w: World): Portal<D1>|null {
+        // FIXME: not implemented
+        return null;
+    }
+
+    public equals(that: Portal<D>): boolean {
+        return this.location.equals(that.location);
     }
 
     /** Compare two portals by their location. */

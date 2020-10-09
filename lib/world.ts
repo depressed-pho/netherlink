@@ -27,14 +27,14 @@ export class World {
                 overworld,
                 new Point(1, 1, 1),
                 "Portal #1",
-                Color.rgb(50, 50, 0)));
+                Color.rgb(100, 100, 0)));
 
         this.portalsOnOverworld.add(
             new Portal<Overworld>(
                 overworld,
                 new Point(10, 10, 10),
                 "Portal #2",
-                Color.rgb(0, 50, 50)));
+                Color.rgb(0, 100, 100)));
     }
 
     /** Compare two worlds by their ID. */
