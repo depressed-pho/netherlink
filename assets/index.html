@@ -60,10 +60,7 @@
           <li class="menu-text">
             <span class="input-group">
               <span class="input-group-label">World</span>
-              <select id="selWorld" class="input-group-field">
-                <option>foo</option>
-                <option>the world blah blah</option>
-              </select>
+              <select id="selWorld" class="input-group-field"></select>
             </span>
           </li>
           <li class="menu-text button-group">
@@ -95,39 +92,7 @@
           <!-- Overworld -->
           <div class="cell medium-6 large-6 grid-x">
             <!-- Portal list -->
-            <div class="cell small-4 card">
-              <table class="hover unstriped nl-selectable nl-scrollable">
-                <caption>
-                  Overworld:
-                  &nbsp;
-                  <a href="#" title="Create a new portal...">
-                    <i class="fi fi-plus"></i>
-                  </a>
-                  <a href="#" title="Delete the portal...">
-                    <i class="fi fi-minus"></i>
-                  </a>
-                  <a href="#" title="Edit the portal...">
-                    <i class="fi fi-pencil"></i>
-                  </a>
-                </caption>
-                <thead>
-                  <tr>
-                    <th>Coords</th>
-                    <th>Name</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>0, 0, 0</td>
-                    <td>Portal #1</td>
-                  </tr>
-                  <tr>
-                    <td>100, 100, 100</td>
-                    <td>Portal #2</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <div id="portalsOnOverworld" class="cell small-5 card"></div>
             <!-- Atlas -->
             <div class="cell auto card">
               2

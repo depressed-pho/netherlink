@@ -1,0 +1,60 @@
+<!-- -*- nxml -*- -->
+<table class="unstriped nl-portal-list nl-selectable nl-scrollable">
+  <caption>
+    Overworld:
+    &nbsp;
+    <a href="#" title="Create a new portal...">
+      <i class="fi fi-plus"></i>
+    </a>
+    <a href="#" title="Delete the portal...">
+      <i class="fi fi-minus"></i>
+    </a>
+    <a href="#" title="Edit the portal...">
+      <i class="fi fi-pencil"></i>
+    </a>
+  </caption>
+  <thead>
+    <tr>
+      <th class="nl-state" />
+      <th class="nl-coords">Coords</th>
+      <th class="nl-name">Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="nl-state">
+        <i class="fi fi-unlink" title="Unlinked" />
+      </td>
+      <td class="nl-coords">0, 0, 0</td>
+      <td class="nl-name">Portal #1</td>
+    </tr>
+    <tr class="nl-selected">
+      <td class="nl-state">
+        <i class="fi fi-link" title="Linked" />
+      </td>
+      <td class="nl-coords">100, 100, 100</td>
+      <td class="nl-name">Portal #2</td>
+    </tr>
+  </tbody>
+</table>
+<template data-for="row">
+  <!-- If this is a selected row, the <tr> element should have
+       .nl-selected -->
+  <tr>
+    <!-- The state column should have style="color: ..." -->
+    <td class="nl-state">
+      <template data-for="unlinked">
+        <i class="fi fi-unlink" title="This portal is unlinked." />
+      </template>
+      <template data-for="linked">
+        <i class="fi fi-link" title="This portal is linked." />
+      </template>
+    </td>
+    <td class="nl-coords">
+      <!-- 0, 0, 0 -->
+    </td>
+    <td class="nl-name">
+      <!-- Portal #1 -->
+    </td>
+  </tr>
+</template>

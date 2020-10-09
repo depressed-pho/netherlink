@@ -1,20 +1,40 @@
-import { PortalOnOverworld, PortalInNether } from 'netherlink/portal';
-import { PortalMap } from 'netherlink/portal/map';
+import { Overworld, Nether, overworld, nether } from 'netherlink/dimension';
+import { Portal } from 'netherlink/portal';
+import { PortalSet } from 'netherlink/portal/set';
 import * as uuid from 'uuid';
+
+// FIXME: remove these
+import { Point } from 'netherlink/point';
+import Color = require('color');
 
 export type WorldID = string; // UUID v1
 
 export class World {
     public readonly id: WorldID;
     public name: string;
-    public readonly portalsOnOverworld: PortalMap<PortalOnOverworld>;
-    public readonly portalsInNether: PortalMap<PortalInNether>;
+    public readonly portalsOnOverworld: PortalSet<Overworld>;
+    public readonly portalsInNether: PortalSet<Nether>;
 
     public constructor(name: string, id?: WorldID) {
         this.id   = id ? id : uuid.v1();
         this.name = name;
-        this.portalsOnOverworld = new PortalMap<PortalOnOverworld>();
-        this.portalsInNether    = new PortalMap<PortalInNether>();
+        this.portalsOnOverworld = new PortalSet<Overworld>();
+        this.portalsInNether    = new PortalSet<Nether>();
+
+        // FIXME: remove this
+        this.portalsOnOverworld.add(
+            new Portal<Overworld>(
+                overworld,
+                new Point(1, 1, 1),
+                "Portal #1",
+                Color.rgb(50, 50, 0)));
+
+        this.portalsOnOverworld.add(
+            new Portal<Overworld>(
+                overworld,
+                new Point(10, 10, 10),
+                "Portal #2",
+                Color.rgb(0, 50, 50)));
     }
 
     /** Compare two worlds by their ID. */

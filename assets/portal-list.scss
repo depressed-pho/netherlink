@@ -1,0 +1,30 @@
+.nl-portal-list {
+    /* Columns */
+    .nl-state {
+        width: 1.5em;
+    }
+    .nl-coords {
+        width: 7em;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    /* Hover */
+    tbody tr {
+        &:hover {
+            background-color: $table-row-hover;
+        }
+    }
+
+    /* Selected row */
+    $selected-color: scale-color(get-color(primary), $lightness: 70%);
+    $selected-hover: darken($selected-color, $table-hover-scale);
+    .nl-selected {
+        background-color: $selected-color;
+
+        &:hover {
+            background-color: $selected-hover;
+        }
+    }
+}

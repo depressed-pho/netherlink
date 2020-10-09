@@ -24,23 +24,9 @@ class ModalConfirmationView {
         this.btnSecondary = this.modalConfirm.querySelector("button[name='secondary']")! as HTMLButtonElement;
         this.btnPrimary   = this.modalConfirm.querySelector("button[name='primary']")! as HTMLButtonElement;
 
-        while (this.paraMessage.firstChild) {
-            this.paraMessage.removeChild(this.paraMessage.firstChild);
-        }
-        this.paraMessage.appendChild(
-            this.paraMessage.ownerDocument.createTextNode(message));
-
-        while (this.btnSecondary.firstChild) {
-            this.btnSecondary.removeChild(this.btnSecondary.firstChild);
-        }
-        this.btnSecondary.appendChild(
-            this.btnSecondary.ownerDocument.createTextNode(secondaryButtonLabel));
-
-        while (this.btnPrimary.firstChild) {
-            this.btnPrimary.removeChild(this.btnPrimary.firstChild);
-        }
-        this.btnPrimary.appendChild(
-            this.btnPrimary.ownerDocument.createTextNode(primaryButtonLabel));
+        this.paraMessage .textContent = message;
+        this.btnSecondary.textContent = secondaryButtonLabel;
+        this.btnPrimary  .textContent = primaryButtonLabel;
 
         /* Unfortunately, we have to use jQuery to register event
          * handlers because the pure DOM API doesn't provide the

@@ -1,8 +1,8 @@
 import * as Bacon from 'baconjs';
+import { confirm } from './confirm';
 import { World, WorldID } from 'netherlink/world';
 import { WorldSelectorModel } from '../model/world-selector';
 import { ModalNewWorldView } from './world-selector/new';
-import { confirm } from './confirm';
 
 export class WorldSelectorView {
     private readonly model: WorldSelectorModel;
