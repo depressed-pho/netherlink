@@ -77,6 +77,9 @@ export class PortalListView<D extends Dimension> {
     }
 
     private onDeletePortal(p: Portal<D>) {
+        /* It's very easy to mistap a small button on a touch
+         * screen. If we deleted it without confirmation, users would
+         * not be happy. */
         confirm(
             `Do you really want to delete the portal "${p.name}", ` +
                 `located at ${p.location} in the ${this.dimension}?`,
