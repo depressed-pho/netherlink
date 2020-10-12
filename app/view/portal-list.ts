@@ -38,6 +38,9 @@ export class PortalListView<D extends Dimension> {
             this.selectedPortal.sampledBy(this.portals) as any,
             this.world.sampledBy(this.portals) as any)
             .onValue(([set, selected, w]: any) => this.refreshPortals(set, selected, w));
+
+        /* Apply changes to the selected portal. */
+        this.selectedPortal.onValue(p => this.highlight(p));
     }
 
     public get fragment(): DocumentFragment {
@@ -57,10 +60,14 @@ export class PortalListView<D extends Dimension> {
             const row = this.tmplRow.content.cloneNode(true) as DocumentFragment;
 
             // Is it selected?
+            const tr = row.querySelector("tr")!;
             if (selected && portal.equals(selected)) {
-                const tr = row.querySelector("tr")!;
                 tr.classList.add("nl-selected");
             }
+            tr.addEventListener('click', ev => {
+                // Select it when clicked.
+                this.model.selectPortal(this.dimension, portal);
+            });
 
             // State
             const colState = row.querySelector("tr > td.nl-state")! as HTMLTableDataCellElement;
@@ -77,12 +84,25 @@ export class PortalListView<D extends Dimension> {
             const colCoords = row.querySelector("tr > td.nl-coords")!;
             const coords = portal.location;
             colCoords.textContent = `${coords.x}, ${coords.y}, ${coords.z}`;
+            tr.setAttribute('data-coords', coords.toString()); // highlight() uses this.
 
             // Name
             const colName = row.querySelector("tr > td.nl-name")!;
             colName.textContent = portal.name;
 
             this.tbody.appendChild(row);
+        }
+    }
+
+    private highlight(p: Portal<D>) {
+        const coords = p ? p.location.toString() : undefined;
+        for (const tr of this.tbody.querySelectorAll("tr")) {
+            if (tr.getAttribute("data-coords") == coords) {
+                tr.classList.add("nl-selected");
+            }
+            else {
+                tr.classList.remove("nl-selected");
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 import * as Bacon from 'baconjs';
-import { Dimension, Overworld, Nether } from 'netherlink/dimension';
+import { Dimension, Overworld, Nether, overworld, nether } from 'netherlink/dimension';
 import { Portal } from 'netherlink/portal';
 import { World } from 'netherlink/world';
 import { WorldSelectorModel } from './world-selector';
@@ -24,10 +24,10 @@ export class WorldEditorModel {
         this.world = this.selModel.activeWorld;
 
         this.portalsOnOverworld = this.selModel.activeWorld.map(w => {
-            return new Set<Portal<Overworld>>(w.portalsOnOverworld);
+            return new Set<Portal<Overworld>>(w.portals(overworld));
         });
         this.portalsInNether = this.selModel.activeWorld.map(w => {
-            return new Set<Portal<Nether>>(w.portalsInNether);
+            return new Set<Portal<Nether>>(w.portals(nether));
         });
 
         this.selectedPortalOnOverworldBus = new Bacon.Bus<Portal<Overworld>|null>();
@@ -41,7 +41,7 @@ export class WorldEditorModel {
     public portals<D extends Dimension>(dimension: D): Bacon.Property<Set<Portal<D>>> {
         if (dimension instanceof Overworld) {
             /* Now we know D is Overworld but TypeScript doesn't allow
-             * us to do this without coercing to any. Possibly a
+             * us to do this without a type coercion. Possibly a
              * bug? */
             return this.portalsOnOverworld as any;
         }
@@ -63,6 +63,18 @@ export class WorldEditorModel {
         }
         else if (dimension instanceof Nether) {
             return this.selectedPortalInNether as any;
+        }
+        else {
+            throw new Error(`Unsupported dimension: ${dimension}`);
+        }
+    }
+
+    public selectPortal<D extends Dimension>(dimension: D, portal: Portal<D>|null) {
+        if (dimension instanceof Overworld) {
+            this.selectedPortalOnOverworldBus.push(portal);
+        }
+        else if (dimension instanceof Nether) {
+            this.selectedPortalInNetherBus.push(portal);
         }
         else {
             throw new Error(`Unsupported dimension: ${dimension}`);

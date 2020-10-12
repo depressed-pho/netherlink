@@ -1,4 +1,4 @@
-import { Overworld, Nether, overworld, nether } from 'netherlink/dimension';
+import { Dimension, Overworld, Nether, overworld, nether } from 'netherlink/dimension';
 import { Portal } from 'netherlink/portal';
 import { PortalSet } from 'netherlink/portal/set';
 import * as uuid from 'uuid';
@@ -12,8 +12,8 @@ export type WorldID = string; // UUID v1
 export class World {
     public readonly id: WorldID;
     public name: string;
-    public readonly portalsOnOverworld: PortalSet<Overworld>;
-    public readonly portalsInNether: PortalSet<Nether>;
+    private readonly portalsOnOverworld: PortalSet<Overworld>;
+    private readonly portalsInNether: PortalSet<Nether>;
 
     public constructor(name: string, id?: WorldID) {
         this.id   = id ? id : uuid.v1();
@@ -29,12 +29,27 @@ export class World {
                 "Portal #1",
                 Color.rgb(100, 100, 0)));
 
-        this.portalsOnOverworld.add(
+        this.portalsInNether.add(
             new Portal<Overworld>(
                 overworld,
                 new Point(10, 10, 10),
                 "Portal #2",
                 Color.rgb(0, 100, 100)));
+    }
+
+    public portals<D extends Dimension>(dimension: D): PortalSet<D> {
+        if (dimension instanceof Overworld) {
+            /* Now we know D is Overworld but TypeScript doesn't allow
+             * us to do this without a type coercion. Possibly a
+             * bug? */
+            return this.portalsOnOverworld as any;
+        }
+        else if (dimension instanceof Nether) {
+            return this.portalsInNether as any;
+        }
+        else {
+            throw new Error(`Unsupported dimension: ${dimension}`);
+        }
     }
 
     /** Compare two worlds by their ID. */

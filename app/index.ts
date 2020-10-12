@@ -18,7 +18,9 @@ window.addEventListener('DOMContentLoaded', (ev) => {
 
     const worldEditM = new WorldEditorModel(worldSelM);
     const owPortalsV = new PortalListView(overworld, worldEditM);
+    const ntPortalsV = new PortalListView(nether, worldEditM);
     attach('portalsOnOverworld', owPortalsV.fragment);
+    attach('portalsInNether', ntPortalsV.fragment);
 });
 
 function attach(id: string, frag: DocumentFragment) {
