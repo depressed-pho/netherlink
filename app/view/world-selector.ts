@@ -41,6 +41,7 @@ export class WorldSelectorView {
         /* The "Rename..." button is always enabled and will open a
          * modal window when clicked. */
         this.btnRename = document.getElementById("btnRenameWorld")! as HTMLButtonElement;
+        // FIXME: Handle it.
     }
 
     private refreshList(set: Set<World>, active: World): void {

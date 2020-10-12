@@ -1,0 +1,22 @@
+/* Usage: <button type="button" class="nl-clickable-text">Label</button> */
+.nl-clickable-text {
+    $color: $primary-color; // From Foundation
+    $color-hover: scale-color($color, $lightness: -15%);
+
+    color: $color;
+    cursor: pointer;
+
+    &:hover {
+        color: $color-hover;
+    }
+
+    /* Disabled state */
+    &[disabled] {
+        opacity: 0.25;
+        cursor: not-allowed;
+    }
+    &[disabled]:hover {
+        // Cancel the hovering color.
+        color: $color;
+    }
+}

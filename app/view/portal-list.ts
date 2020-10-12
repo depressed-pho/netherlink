@@ -1,5 +1,6 @@
 import * as Bacon from 'baconjs';
-import { Dimension } from 'netherlink/dimension';
+import { confirm } from './confirm';
+import { Dimension, Overworld, Nether } from 'netherlink/dimension';
 import { parseHTML } from 'netherlink/parse-html';
 import { Portal } from 'netherlink/portal';
 import { World } from 'netherlink/world';
@@ -11,6 +12,9 @@ export class PortalListView<D extends Dimension> {
     private readonly model: WorldEditorModel;
 
     private readonly pane: DocumentFragment;
+    private readonly btnNew: HTMLButtonElement;
+    private readonly btnDelete: HTMLButtonElement;
+    private readonly btnEdit: HTMLButtonElement;
     private readonly tbody: HTMLTableSectionElement;
     private readonly tmplRow: HTMLTemplateElement;
 
@@ -22,17 +26,42 @@ export class PortalListView<D extends Dimension> {
         this.dimension = dimension;
         this.model     = model;
 
-        this.pane    = parseHTML(htmlPortalList);
-        this.tbody   = this.pane.querySelector("table > tbody")! as HTMLTableSectionElement;
-        this.tmplRow = this.pane.querySelector("template[data-for='row']")! as HTMLTemplateElement;
+        this.pane = parseHTML(htmlPortalList);
 
         this.world          = this.model.world;
         this.portals        = this.model.portals(dimension);
         this.selectedPortal = this.model.selectedPortal(dimension);
 
+        /* The caption text (showing the dimension name) never changes
+         * once it's initialized. */
+        this.pane.querySelector("table > caption > span[data-dimension]")!
+            .textContent = this.dimension.name;
+
+        /* The "New portal" button is always active, and will open a
+         * modal window when clicked. */
+        this.btnNew = this.pane.querySelector("button[data-for='create']")! as HTMLButtonElement;
+
+        /* The "Delete portal" button is enabled when a portal is
+         * selected. */
+        this.btnDelete = this.pane.querySelector("button[data-for='delete']")! as HTMLButtonElement;
+        this.selectedPortal.onValue(sel => {
+            this.btnDelete.disabled = sel == null;
+        });
+        const deleteClicked = Bacon.fromEvent(this.btnDelete, 'click');
+        this.selectedPortal.sampledBy(deleteClicked).onValue(sel => this.onDeletePortal(sel));
+
+        /* The "Edit portal" button is enabled when a portal is
+         * selected. */
+        this.btnEdit = this.pane.querySelector("button[data-for='edit']")! as HTMLButtonElement;
+        this.selectedPortal.onValue(sel => {
+            this.btnEdit.disabled = sel == null;
+        });
+
         /* The portal list table should be synchronized with one of
          * the portal lists, with sampling the value of the property
          * selectedPortal. */
+        this.tbody   = this.pane.querySelector("table > tbody")! as HTMLTableSectionElement;
+        this.tmplRow = this.pane.querySelector("template[data-for='row']")! as HTMLTemplateElement;
         Bacon.combineAsArray(
             this.portals,
             this.selectedPortal.sampledBy(this.portals) as any,
@@ -45,6 +74,17 @@ export class PortalListView<D extends Dimension> {
 
     public get fragment(): DocumentFragment {
         return this.pane;
+    }
+
+    private onDeletePortal(p: Portal<D>) {
+        confirm(
+            `Do you really want to delete the portal "${p.name}", ` +
+                `located at ${p.location} in the ${this.dimension}?`,
+            "Yes, delete it",
+            "No, keep it"
+        ).catch(() => {
+            this.model.deletePortal(this.dimension, p);
+        });
     }
 
     private refreshPortals(set: Set<Portal<D>>, selected: Portal<D>|null, w: World) {
@@ -84,7 +124,7 @@ export class PortalListView<D extends Dimension> {
             const colCoords = row.querySelector("tr > td.nl-coords")!;
             const coords = portal.location;
             colCoords.textContent = `${coords.x}, ${coords.y}, ${coords.z}`;
-            tr.setAttribute('data-coords', coords.toString()); // highlight() uses this.
+            tr.dataset.coords = coords.toString(); // highlight() uses this.
 
             // Name
             const colName = row.querySelector("tr > td.nl-name")!;
@@ -97,7 +137,7 @@ export class PortalListView<D extends Dimension> {
     private highlight(p: Portal<D>) {
         const coords = p ? p.location.toString() : undefined;
         for (const tr of this.tbody.querySelectorAll("tr")) {
-            if (tr.getAttribute("data-coords") == coords) {
+            if (tr.dataset.coords == coords) {
                 tr.classList.add("nl-selected");
             }
             else {

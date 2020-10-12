@@ -55,6 +55,12 @@ export class WorldSelectorModel {
         this.activeWorldBus.push(w);
     }
 
+    public modifyActiveWorld(mod: (w: World) => void): void {
+        const w: World = this.storage.activeWorld;
+        mod(w);
+        this.activeWorldBus.push(w);
+    }
+
     public deleteWorld(id: WorldID): void {
         this.storage.deleteWorld(id);
         this.worldsBus.push(new Set<World>(this.storage));

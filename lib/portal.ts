@@ -29,7 +29,7 @@ export class Portal<D extends Dimension> {
     }
 
     /** Compare two portals by their location. */
-    public static compare<D>(p1: Portal<D>, p2: Portal<D>): -1|0|1 {
+    public static compare<D extends Dimension>(p1: Portal<D>, p2: Portal<D>): -1|0|1 {
         /* Since there is no sensible way to order 3D points, we
          * compare their distance from the origin. */
         const d1 = Point.distance(p1.location, Point.origin);

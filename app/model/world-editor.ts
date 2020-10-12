@@ -9,11 +9,11 @@ export class WorldEditorModel {
 
     public readonly world: Bacon.Property<World>;
 
-    private readonly portalsOnOverworld: Bacon.Property<Set<Portal<Overworld>>>;
+    private readonly portalsInOverworld: Bacon.Property<Set<Portal<Overworld>>>;
     private readonly portalsInNether: Bacon.Property<Set<Portal<Nether>>>;
 
-    private readonly selectedPortalOnOverworldBus: Bacon.Bus<Portal<Overworld>|null>;
-    private readonly selectedPortalOnOverworld: Bacon.Property<Portal<Overworld>|null>;
+    private readonly selectedPortalInOverworldBus: Bacon.Bus<Portal<Overworld>|null>;
+    private readonly selectedPortalInOverworld: Bacon.Property<Portal<Overworld>|null>;
 
     private readonly selectedPortalInNetherBus: Bacon.Bus<Portal<Nether>|null>;
     private readonly selectedPortalInNether: Bacon.Property<Portal<Nether>|null>;
@@ -23,15 +23,15 @@ export class WorldEditorModel {
 
         this.world = this.selModel.activeWorld;
 
-        this.portalsOnOverworld = this.selModel.activeWorld.map(w => {
+        this.portalsInOverworld = this.selModel.activeWorld.map(w => {
             return new Set<Portal<Overworld>>(w.portals(overworld));
         });
         this.portalsInNether = this.selModel.activeWorld.map(w => {
             return new Set<Portal<Nether>>(w.portals(nether));
         });
 
-        this.selectedPortalOnOverworldBus = new Bacon.Bus<Portal<Overworld>|null>();
-        this.selectedPortalOnOverworld    = this.selectedPortalOnOverworldBus.toProperty(null);
+        this.selectedPortalInOverworldBus = new Bacon.Bus<Portal<Overworld>|null>();
+        this.selectedPortalInOverworld    = this.selectedPortalInOverworldBus.toProperty(null);
 
         this.selectedPortalInNetherBus    = new Bacon.Bus<Portal<Nether>|null>();
         this.selectedPortalInNether       = this.selectedPortalInNetherBus.toProperty(null);
@@ -43,7 +43,7 @@ export class WorldEditorModel {
             /* Now we know D is Overworld but TypeScript doesn't allow
              * us to do this without a type coercion. Possibly a
              * bug? */
-            return this.portalsOnOverworld as any;
+            return this.portalsInOverworld as any;
         }
         else if (dimension instanceof Nether) {
             return this.portalsInNether as any;
@@ -59,7 +59,7 @@ export class WorldEditorModel {
             /* Now we know D is Overworld but TypeScript doesn't allow
              * us to do this without coercing to any. Possibly a
              * bug? */
-            return this.selectedPortalOnOverworld as any;
+            return this.selectedPortalInOverworld as any;
         }
         else if (dimension instanceof Nether) {
             return this.selectedPortalInNether as any;
@@ -69,15 +69,26 @@ export class WorldEditorModel {
         }
     }
 
-    public selectPortal<D extends Dimension>(dimension: D, portal: Portal<D>|null) {
+    private selectedPortalBus<D extends Dimension>(dimension: D): Bacon.Bus<Portal<D>|null> {
         if (dimension instanceof Overworld) {
-            this.selectedPortalOnOverworldBus.push(portal);
+            return this.selectedPortalInOverworldBus as any;
         }
         else if (dimension instanceof Nether) {
-            this.selectedPortalInNetherBus.push(portal);
+            return this.selectedPortalInNetherBus as any;
         }
         else {
             throw new Error(`Unsupported dimension: ${dimension}`);
         }
+    }
+
+    public selectPortal<D extends Dimension>(dimension: D, portal: Portal<D>|null) {
+        this.selectedPortalBus(dimension).push(portal);
+    }
+
+    public deletePortal<D extends Dimension>(dimension: D, portal: Portal<D>) {
+        this.selectedPortalBus(dimension).push(null);
+        this.selModel.modifyActiveWorld((w: World) => {
+            w.portals(dimension).delete(portal);
+        });
     }
 }

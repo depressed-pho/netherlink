@@ -16,4 +16,9 @@ export class PortalSet<D extends Dimension> implements Iterable<Portal<D>> {
         this.map.set(portal.location.toString(), portal);
         return this;
     }
+
+    public delete(portal: Portal<D>): this {
+        this.map.delete(portal.location.toString());
+        return this;
+    }
 }

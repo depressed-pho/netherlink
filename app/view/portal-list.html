@@ -1,17 +1,21 @@
 <!-- -*- nxml -*- -->
 <table class="unstriped nl-portal-list nl-selectable nl-scrollable">
   <caption>
-    Overworld:
+    <!-- "Overworld:" or "Nether:" -->
+    <span data-dimension=""></span>:
     &nbsp;
-    <a href="#" title="Create a new portal...">
+    <button type="button" class="nl-clickable-text" data-for="create"
+            title="Create a new portal...">
       <i class="fi fi-plus"></i>
-    </a>
-    <a href="#" title="Delete the portal...">
+    </button>
+    <button type="button" class="nl-clickable-text" data-for="delete"
+            title="Delete the portal...">
       <i class="fi fi-minus"></i>
-    </a>
-    <a href="#" title="Edit the portal...">
+    </button>
+    <button type="button" class="nl-clickable-text" data-for="edit"
+            title="Edit the portal...">
       <i class="fi fi-pencil"></i>
-    </a>
+    </button>
   </caption>
   <thead>
     <tr>

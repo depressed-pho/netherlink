@@ -12,17 +12,17 @@ export type WorldID = string; // UUID v1
 export class World {
     public readonly id: WorldID;
     public name: string;
-    private readonly portalsOnOverworld: PortalSet<Overworld>;
+    private readonly portalsInOverworld: PortalSet<Overworld>;
     private readonly portalsInNether: PortalSet<Nether>;
 
     public constructor(name: string, id?: WorldID) {
         this.id   = id ? id : uuid.v1();
         this.name = name;
-        this.portalsOnOverworld = new PortalSet<Overworld>();
+        this.portalsInOverworld = new PortalSet<Overworld>();
         this.portalsInNether    = new PortalSet<Nether>();
 
         // FIXME: remove this
-        this.portalsOnOverworld.add(
+        this.portalsInOverworld.add(
             new Portal<Overworld>(
                 overworld,
                 new Point(1, 1, 1),
@@ -42,7 +42,7 @@ export class World {
             /* Now we know D is Overworld but TypeScript doesn't allow
              * us to do this without a type coercion. Possibly a
              * bug? */
-            return this.portalsOnOverworld as any;
+            return this.portalsInOverworld as any;
         }
         else if (dimension instanceof Nether) {
             return this.portalsInNether as any;
