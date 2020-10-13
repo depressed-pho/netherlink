@@ -16,6 +16,10 @@ export class Point {
         return this.x == that.x && this.y == that.y && this.z == that.z;
     }
 
+    public static equals(a: Point, b: Point): boolean {
+        return a.equals(b);
+    }
+
     public toString(): string {
         return `${this.x}, ${this.y}, ${this.z}`;
     }

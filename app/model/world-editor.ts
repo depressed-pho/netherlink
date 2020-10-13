@@ -1,5 +1,6 @@
 import * as Bacon from 'baconjs';
 import { Dimension, Overworld, Nether, overworld, nether } from 'netherlink/dimension';
+import { Point } from 'netherlink/point';
 import { Portal } from 'netherlink/portal';
 import { World } from 'netherlink/world';
 import { WorldSelectorModel } from './world-selector';
@@ -18,23 +19,105 @@ export class WorldEditorModel {
     private readonly selectedPortalInNetherBus: Bacon.Bus<Portal<Nether>|null>;
     private readonly selectedPortalInNether: Bacon.Property<Portal<Nether>|null>;
 
+    private readonly coordsInOverworldBus: Bacon.Bus<Point>;
+    private readonly coordsInOverworld: Bacon.Property<Point>;
+
+    private readonly coordsInNetherBus: Bacon.Bus<Point>;
+    private readonly coordsInNether: Bacon.Property<Point>;
+
     public constructor(selModel: WorldSelectorModel) {
         this.selModel = selModel;
 
         this.world = this.selModel.activeWorld;
 
-        this.portalsInOverworld = this.selModel.activeWorld.map(w => {
+        this.portalsInOverworld = this.world.map(w => {
             return new Set<Portal<Overworld>>(w.portals(overworld));
         });
-        this.portalsInNether = this.selModel.activeWorld.map(w => {
+        this.portalsInNether = this.world.map(w => {
             return new Set<Portal<Nether>>(w.portals(nether));
         });
 
         this.selectedPortalInOverworldBus = new Bacon.Bus<Portal<Overworld>|null>();
-        this.selectedPortalInOverworld    = this.selectedPortalInOverworldBus.toProperty(null);
+        this.selectedPortalInOverworld    =
+            this.selectedPortalInOverworldBus
+                .skipDuplicates((a, b) =>  a &&  b ? a.equals(b)
+                                        : !a && !b ? true
+                                        : false)
+                .toProperty(null);
 
-        this.selectedPortalInNetherBus    = new Bacon.Bus<Portal<Nether>|null>();
-        this.selectedPortalInNether       = this.selectedPortalInNetherBus.toProperty(null);
+        this.selectedPortalInNetherBus = new Bacon.Bus<Portal<Nether>|null>();
+        this.selectedPortalInNether    =
+            this.selectedPortalInNetherBus
+                .skipDuplicates((a, b) =>  a &&  b ? a.equals(b)
+                                        : !a && !b ? true
+                                        : false)
+                .toProperty(null);
+
+        this.coordsInOverworldBus = new Bacon.Bus<Point>();
+        this.coordsInOverworld    =
+            this.coordsInOverworldBus
+                .skipDuplicates(Point.equals)
+                .toProperty(Point.origin);
+
+        this.coordsInNetherBus    = new Bacon.Bus<Point>();
+        this.coordsInNether       =
+            this.coordsInNetherBus
+                .skipDuplicates(Point.equals)
+                .toProperty(Point.origin);
+
+        /* This is a tricky part. Changes in the selected portal
+         * property affects the current coords in the same dimension,
+         * but changes in the current coords also affects the selected
+         * portal in the same dimension. */
+        this.coordsInOverworldBus.plug(
+            this.selectedPortalInOverworld
+                .flatMap(p => p ? Bacon.once(p.location) : Bacon.never() as any));
+        this.coordsInNetherBus.plug(
+            this.selectedPortalInNether
+                .flatMap(p => p ? Bacon.once(p.location) : Bacon.never() as any));
+
+        this.selectedPortalInOverworldBus.plug(
+            Bacon.combineAsArray(
+                this.coordsInOverworld,
+                this.world.sampledBy(this.coordsInOverworld) as any)
+                .map(([pt, w]: any) => w.portals(overworld).find(pt)));
+        this.selectedPortalInNetherBus.plug(
+            Bacon.combineAsArray(
+                this.coordsInNether,
+                this.world.sampledBy(this.coordsInNether) as any)
+                .map(([pt, w]: any) => w.portals(nether).find(pt)));
+
+        /* And this too is a tricky part. Whenever a portal is
+         * selected, and has a linked portal in the opposite
+         * dimension, the linked one will be selected too (and thus
+         * changes the coords in the other dimension).
+         */
+        this.selectedPortalInOverworldBus.plug(
+            Bacon.combineAsArray(
+                this.selectedPortalInNether,
+                this.world.sampledBy(this.selectedPortalInNether) as any)
+                .flatMap(([p, w]: any) => {
+                    if (p) {
+                        const p2: Portal<Overworld>|null = p.linkedPortal(w);
+                        return p2 ? Bacon.once(p2) : Bacon.never() as any;
+                    }
+                    else {
+                        return Bacon.never();
+                    }
+                }));
+        this.selectedPortalInNetherBus.plug(
+            Bacon.combineAsArray(
+                this.selectedPortalInOverworld,
+                this.world.sampledBy(this.selectedPortalInOverworld) as any)
+                .flatMap(([p, w]: any) => {
+                    if (p) {
+                        const p2: Portal<Nether>|null = p.linkedPortal(w);
+                        return p2 ? Bacon.once(p2) : Bacon.never() as any;
+                    }
+                    else {
+                        return Bacon.never();
+                    }
+                }));
     }
 
     /* Events indicating portal lists need to be refreshed. */
@@ -90,5 +173,36 @@ export class WorldEditorModel {
         this.selModel.modifyActiveWorld((w: World) => {
             w.portals(dimension).delete(portal);
         });
+    }
+
+    public currentCoords<D extends Dimension>(dimension: D): Bacon.Property<Point>;
+    public currentCoords<D extends Dimension>(dimension: D, pt: Point): void;
+    public currentCoords<D extends Dimension>(dimension: D, pt?: Point): any {
+        if (pt) {
+            this.currentCoordsBus(dimension).push(pt);
+        }
+        else {
+            if (dimension instanceof Overworld) {
+                return this.coordsInOverworld as any;
+            }
+            else if (dimension instanceof Nether) {
+                return this.coordsInNether as any;
+            }
+            else {
+                throw new Error(`Unsupported dimension: ${dimension}`);
+            }
+        }
+    }
+
+    private currentCoordsBus<D extends Dimension>(dimension: D): Bacon.Bus<Point> {
+        if (dimension instanceof Overworld) {
+            return this.coordsInOverworldBus as any;
+        }
+        else if (dimension instanceof Nether) {
+            return this.coordsInNetherBus as any;
+        }
+        else {
+            throw new Error(`Unsupported dimension: ${dimension}`);
+        }
     }
 }

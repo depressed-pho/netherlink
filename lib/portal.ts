@@ -19,13 +19,17 @@ export class Portal<D extends Dimension> {
         this.color     = color;
     }
 
-    public destination<D1 extends Dimension>(w: World): Portal<D1>|null {
+    public linkedPortal<D1 extends Dimension>(w: World): Portal<D1>|null {
         // FIXME: not implemented
         return null;
     }
 
     public equals(that: Portal<D>): boolean {
         return this.location.equals(that.location);
+    }
+
+    public static equals<D extends Dimension>(a: Portal<D>, b: Portal<D>): boolean {
+        return a.equals(b);
     }
 
     /** Compare two portals by their location. */

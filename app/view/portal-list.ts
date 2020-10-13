@@ -114,7 +114,7 @@ export class PortalListView<D extends Dimension> {
 
             // State
             const colState = row.querySelector("tr > td.nl-state")! as HTMLTableDataCellElement;
-            const tmplState = (portal.destination(w) ?
+            const tmplState = (portal.linkedPortal(w) ?
                 colState.querySelector("template[data-for='linked']")! :
                 colState.querySelector("template[data-for='unlinked']")!) as HTMLTemplateElement;
             while (colState.firstChild) {

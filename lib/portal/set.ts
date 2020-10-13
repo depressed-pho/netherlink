@@ -1,4 +1,5 @@
 import { Dimension } from 'netherlink/dimension';
+import { Point } from 'netherlink/point';
 import { Portal } from 'netherlink/portal';
 
 export class PortalSet<D extends Dimension> implements Iterable<Portal<D>> {
@@ -20,5 +21,14 @@ export class PortalSet<D extends Dimension> implements Iterable<Portal<D>> {
     public delete(portal: Portal<D>): this {
         this.map.delete(portal.location.toString());
         return this;
+    }
+
+    public find(loc: Point): Portal<D>|null {
+        for (let p of this) {
+            if (p.location.equals(loc)) {
+                return p;
+            }
+        }
+        return null;
     }
 }
