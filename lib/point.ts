@@ -24,6 +24,12 @@ export class Point {
         return `${this.x}, ${this.y}, ${this.z}`;
     }
 
+    public within([from, to]: [Point, Point]): boolean {
+        return this.x >= from.x && this.x < to.x &&
+               this.y >= from.y && this.y < to.y &&
+               this.z >= from.z && this.z < to.z;
+    }
+
     public static distance(p1: Point, p2: Point): number {
         return Math.sqrt(
             Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2) + Math.pow(p2.z - p1.z, 2));

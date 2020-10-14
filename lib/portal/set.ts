@@ -31,4 +31,17 @@ export class PortalSet<D extends Dimension> implements Iterable<Portal<D>> {
         }
         return null;
     }
+
+    /** Create a new PortalSet only containing portals within the
+     * given area.
+     */
+    public narrow(area: [Point, Point]): PortalSet<D> {
+        const ret = new PortalSet<D>();
+        for (let p of this) {
+            if (p.location.within(area)) {
+                ret.add(p);
+            }
+        }
+        return ret;
+    }
 }

@@ -37,9 +37,12 @@ export class PortalListView<D extends Dimension> {
         this.pane.querySelector("table > caption > span[data-dimension]")!
             .textContent = this.dimension.name;
 
-        /* The "New portal" button is always active, and will open a
-         * modal window when clicked. */
+        /* The "New portal" button is enabled when no portals are
+         * selected, and will open a modal window when clicked. */
         this.btnNew = this.pane.querySelector("button[data-for='create']")! as HTMLButtonElement;
+        this.selectedPortal.onValue(sel => {
+            this.btnNew.disabled = sel != null;
+        });
 
         /* The "Delete portal" button is enabled when a portal is
          * selected. */
@@ -142,6 +145,7 @@ export class PortalListView<D extends Dimension> {
         for (const tr of this.tbody.querySelectorAll("tr")) {
             if (tr.dataset.coords == coords) {
                 tr.classList.add("nl-selected");
+                // FIXME: Scroll
             }
             else {
                 tr.classList.remove("nl-selected");
