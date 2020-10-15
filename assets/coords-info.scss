@@ -1,0 +1,14 @@
+.nl-coords-info {
+    /* We want its height to be some fixed value relative to the line
+     * height. The CSS unit "lh" would probably be the best way to do
+     * it, but no browsers actually support it at the moment (see
+     * https://blog.logrocket.com/intro-to-lh-and-rlh-in-css/). As a
+     * workaround we set line-height to some fixed value
+     * (https://stackoverflow.com/questions/3675623/how-to-set-element-height-for-a-fixed-number-of-lines-of-text).
+     */
+    --lh: 2.5ex;
+    --lines: 2;
+    line-height: var(--lh);
+    height: calc(var(--lh) * var(--lines));
+    overflow-y: auto;
+}
