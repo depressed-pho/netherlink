@@ -4,7 +4,7 @@ import { World } from 'netherlink/world';
 import Color = require('color');
 
 export class Portal<D extends Dimension> {
-    private readonly dimension: D;
+    public readonly dimension: D;
     public readonly location: Point;
     public name: string;
     public color: Color;

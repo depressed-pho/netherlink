@@ -1,17 +1,18 @@
-import { Point } from 'netherlink/point';
+import { Point, Point2D } from 'netherlink/point';
 
 export class Chunk {
     /** Origin of the chunk (normalized, i.e. always multiple of
-     * 16). The Y coordinate is always 0.
+     * 16).
      */
-    public readonly origin: Point;
+    public readonly origin: Point2D;
 
     /** Construct a Chunk object containing a given point.
      */
-    public constructor(pt: Point) {
-        this.origin = new Point(
+    public constructor(pt: Point2D);
+    public constructor(pt: Point);
+    public constructor(pt: any) {
+        this.origin = new Point2D(
             Math.floor(pt.x / 16) * 16,
-            0,
             Math.floor(pt.z / 16) * 16);
     }
 
@@ -19,9 +20,8 @@ export class Chunk {
      */
     public offset(x: number, z: number) {
         return new Chunk(
-            new Point(
+            new Point2D(
                 this.origin.x + x * 16,
-                0,
                 this.origin.z + z * 16));
     }
 }

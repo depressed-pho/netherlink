@@ -7,6 +7,7 @@ import { Portal } from 'netherlink/portal';
 import { World } from 'netherlink/world';
 import { WorldEditorModel } from '../model/world-editor';
 import htmlCoordsInfo from './coords-info.html';
+import Color = require('color');
 
 export class CoordsInfoView<D extends Dimension> {
     private readonly dimension: D;
@@ -16,6 +17,7 @@ export class CoordsInfoView<D extends Dimension> {
     private readonly fldX: HTMLInputElement;
     private readonly fldY: HTMLInputElement;
     private readonly fldZ: HTMLInputElement;
+    private readonly divInfo: HTMLDivElement;
 
     public constructor(dimension: D, model: WorldEditorModel) {
         this.dimension = dimension;
@@ -48,9 +50,80 @@ export class CoordsInfoView<D extends Dimension> {
                         Number(this.fldZ.value)));
             });
         }
+
+        /* The info field is updated whenever a selected portal or
+         * coords (for this dimension) changes, but since this is
+         * quite costly we throttle the update events for coords.
+         */
+        this.divInfo = this.pane.querySelector("div[data-for='info']")! as HTMLDivElement;
+        const throttleMilliSec = 10;
+        const throttledCoords  = this.model.currentCoords(dimension).throttle(throttleMilliSec);
+        Bacon.combineAsArray(
+            this.model.selectedPortal(dimension),
+            throttledCoords as any,
+            this.model.world.sampledBy(
+                // THINKME: Is there a better way to do this?
+                Bacon.combineAsArray(
+                    this.model.selectedPortal(dimension),
+                    throttledCoords as any)) as any)
+            .onValue(([sel, pt, w]: any) => this.updateInfo(sel, pt, w));
     }
 
     public get fragment(): DocumentFragment {
         return this.pane;
+    }
+
+    private updateInfo(sel: Portal<D>|null, pt: Point, w: World) {
+        while (this.divInfo.firstChild) {
+            this.divInfo.removeChild(this.divInfo.firstChild);
+        }
+
+        if (sel) {
+            // There is a selected portal.
+            const linked = sel.linkedPortal(w);
+
+            if (linked) {
+                // And there is a valid destination.
+                this.divInfo.textContent =
+                    `This portal is linked up with "${linked.name}"` +
+                    ` in the ${linked.dimension} located at ${linked.location}.`;
+            }
+            else {
+                // But there are no valid destinations.
+                const nominal = this.dimension.scaleAndRestrictForPortal(pt);
+                this.divInfo.textContent =
+                    `This portal has no destinations. When someone enters it, the game` +
+                    ` will create a new portal somewhere around ${nominal} in the` +
+                    ` ${this.dimension.portalOpposite} since there are no portals nearby.`;
+            }
+        }
+        else {
+            // No portals are selected.
+            const virtualPortal = new Portal<D>(this.dimension, pt, "", Color('black'));
+            const linked        = virtualPortal.linkedPortal(w);
+
+            if (linked) {
+                // But there is a valid destination.
+                this.divInfo.appendChild(
+                    document.createTextNode(
+                        "If a portal is created here, it will link up with "));
+
+                const a = document.createElement("a");
+                a.textContent = linked.name;
+                this.divInfo.appendChild(a);
+
+                this.divInfo.appendChild(
+                    document.createTextNode(
+                        ` in the ${linked.dimension} located at ${linked.location}.`));
+            }
+            else {
+                // And there are no valid destinations either.
+                const nominal = this.dimension.scaleAndRestrictForPortal(pt);
+                this.divInfo.textContent =
+                    `If a portal is created here, the game will create a new portal` +
+                    ` somewhere around ${nominal} in the ${this.dimension.portalOpposite}` +
+                    ` since there are no portals nearby.`;
+            }
+        }
     }
 }

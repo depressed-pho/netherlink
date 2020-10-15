@@ -6,6 +6,10 @@ export class Dimension {
         throw new Error("Not implemented");
     }
 
+    public get portalHeightLimit(): number {
+        throw new Error("Not implemented");
+    }
+
     public toString(): string {
         return this.name;
     }
@@ -23,6 +27,19 @@ export class Dimension {
         throw new Error("Not implemented");
     }
 
+    /** Like scaleForPortal() but this one also applies a restriction
+     * for creating new portals.
+     */
+    public scaleAndRestrictForPortal(from: Point): Point {
+        const scaled = this.scaleForPortal(from);
+        const minY   = 70;
+        const maxY   = this.portalOpposite.portalHeightLimit - 10;
+        return new Point(
+            scaled.x,
+            Math.min(Math.max(scaled.y, minY), maxY),
+            scaled.z);
+    }
+
     /** Calculate the bounding area for searching Nether portals in
      * this dimension, based on the nominal destination. The area is
      * represented as [p1, p2).
@@ -35,6 +52,10 @@ export class Dimension {
 export class Overworld extends Dimension {
     public get name(): string {
         return "Overworld";
+    }
+
+    public get portalHeightLimit(): number {
+        return 256;
     }
 
     public get portalOpposite(): Nether {
@@ -62,6 +83,10 @@ export class Overworld extends Dimension {
 export class Nether extends Dimension {
     public get name(): string {
         return "Nether";
+    }
+
+    public get portalHeightLimit(): number {
+        return 128;
     }
 
     public get portalOpposite(): Overworld {

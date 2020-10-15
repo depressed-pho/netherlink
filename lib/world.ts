@@ -35,6 +35,7 @@ export class World {
                 new Point(10, 10, 10),
                 "Portal #2",
                 Color.rgb(0, 100, 100)));
+
     }
 
     public portals<D extends Dimension>(dimension: D): PortalSet<D> {

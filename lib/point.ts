@@ -35,3 +35,13 @@ export class Point {
             Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2) + Math.pow(p2.z - p1.z, 2));
     }
 }
+
+export class Point2D {
+    public readonly x: number;
+    public readonly z: number;
+
+    public constructor(x: number, z: number) {
+        this.x = x;
+        this.z = z;
+    }
+}

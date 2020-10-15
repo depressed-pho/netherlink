@@ -57,18 +57,20 @@ export class WorldEditorModel {
         this.coordsInOverworld    =
             this.coordsInOverworldBus
                 .skipDuplicates(Point.equals)
-                .toProperty(Point.origin);
+                .toProperty(new Point(0, 64, 0));
 
         this.coordsInNetherBus    = new Bacon.Bus<Point>();
         this.coordsInNether       =
             this.coordsInNetherBus
                 .skipDuplicates(Point.equals)
-                .toProperty(Point.origin);
+                .toProperty(new Point(0, 64, 0));
 
         /* This is a tricky part. Changes in the selected portal
          * property affects the current coords in the same dimension,
          * but changes in the current coords also affects the selected
-         * portal in the same dimension. */
+         * portal in the same dimension. But since update events for
+         * coords can happen very frequently, we throttle those
+         * events. */
         this.coordsInOverworldBus.plug(
             this.selectedPortalInOverworld
                 .flatMap(p => p ? Bacon.once(p.location) : Bacon.never() as any));
@@ -76,15 +78,18 @@ export class WorldEditorModel {
             this.selectedPortalInNether
                 .flatMap(p => p ? Bacon.once(p.location) : Bacon.never() as any));
 
+        const throttleMilliSec  = 10;
+        const throttledCoordsOW = this.coordsInOverworld.throttle(throttleMilliSec);
+        const throttledCoordsNT = this.coordsInNether.throttle(throttleMilliSec);
         this.selectedPortalInOverworldBus.plug(
             Bacon.combineAsArray(
-                this.coordsInOverworld,
-                this.world.sampledBy(this.coordsInOverworld) as any)
+                throttledCoordsOW,
+                this.world.sampledBy(throttledCoordsOW) as any)
                 .map(([pt, w]: any) => w.portals(overworld).find(pt)));
         this.selectedPortalInNetherBus.plug(
             Bacon.combineAsArray(
-                this.coordsInNether,
-                this.world.sampledBy(this.coordsInNether) as any)
+                throttledCoordsNT,
+                this.world.sampledBy(throttledCoordsNT) as any)
                 .map(([pt, w]: any) => w.portals(nether).find(pt)));
 
         /* And this too is a tricky part. Whenever a portal is
