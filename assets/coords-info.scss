@@ -7,9 +7,10 @@
      * (https://stackoverflow.com/questions/3675623/how-to-set-element-height-for-a-fixed-number-of-lines-of-text).
      */
     --height: 2.5ex;
-    --lines: 2;
+    --lines: 3;
 
     line-height: var(--height);
     height: calc(var(--height) * var(--lines));
+
     overflow-y: auto;
 }

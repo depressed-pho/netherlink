@@ -23,7 +23,38 @@
       <div class="cell shrink">
         Info:
       </div>
-      <div class="cell auto nl-coords-info" data-for="info">
+      <div class="cell auto">
+        <div class="nl-coords-info" data-for="info"></div>
+
+        <template data-selected="true" data-linked="true">
+          This portal is linked up with
+          <span data-for="name"><!-- style="color: ..." --></span>
+          in the <span data-for="dimension"></span>
+          located at <span data-for="location"></span>.
+        </template>
+
+        <template data-selected="true" data-linked="false">
+          This portal has no destinations. When someone enters it, the
+          game will create a new portal somewhere around
+          <a data-for="location"></a>
+          in the <span data-for="dimension"></span>
+          since there are no portals nearby.
+        </template>
+
+        <template data-selected="false" data-linked="true">
+          If a portal is created here, it will link up with
+          <a data-for="name"></a>
+          in the <span data-for="dimension"></span>
+          located at <span data-for="location"></span>.
+        </template>
+
+        <template data-selected="false" data-linked="false">
+          If a portal is created here, the game will create a new
+          portal somewhere around
+          <a data-for="location"></a>
+          in the <span data-for="dimension"></span>
+          since there are no portals nearby.
+        </template>
       </div>
     </div>
   </div>

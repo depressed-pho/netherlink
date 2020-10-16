@@ -19,6 +19,11 @@ export class CoordsInfoView<D extends Dimension> {
     private readonly fldZ: HTMLInputElement;
     private readonly divInfo: HTMLDivElement;
 
+    private readonly tmplSelectedLinked: HTMLTemplateElement;
+    private readonly tmplSelectedUnlinked: HTMLTemplateElement;
+    private readonly tmplUnselectedLinked: HTMLTemplateElement;
+    private readonly tmplUnselectedUnlinked: HTMLTemplateElement;
+
     public constructor(dimension: D, model: WorldEditorModel) {
         this.dimension = dimension;
         this.model     = model;
@@ -55,20 +60,26 @@ export class CoordsInfoView<D extends Dimension> {
         this.fldY.max = String(dimension.portalHeightLimit);
         this.fldY.min = String(0);
 
-        /* The info field is updated whenever a selected portal or
-         * coords (for this dimension) changes, but since this is
-         * quite costly we throttle the update events for coords.
+        /* The info field is updated whenever the set of portals, a
+         * selected portal, or coords (for this dimension) changes,
+         * but since this is quite costly we throttle the update
+         * events for coords.
          */
-        this.divInfo = this.pane.querySelector("div[data-for='info']")! as HTMLDivElement;
+        this.divInfo                = this.pane.querySelector("div[data-for='info']")! as HTMLDivElement;
+        this.tmplSelectedLinked     = this.pane.querySelector("template[data-selected='true'][data-linked='true']")! as HTMLTemplateElement;
+        this.tmplSelectedUnlinked   = this.pane.querySelector("template[data-selected='true'][data-linked='false']")! as HTMLTemplateElement;
+        this.tmplUnselectedLinked   = this.pane.querySelector("template[data-selected='false'][data-linked='true']")! as HTMLTemplateElement;
+        this.tmplUnselectedUnlinked = this.pane.querySelector("template[data-selected='false'][data-linked='false']")! as HTMLTemplateElement;
+
         const throttleMilliSec = 10;
         const throttledCoords  = this.model.currentCoords(dimension).throttle(throttleMilliSec);
         Bacon.combineAsArray(
             this.model.selectedPortal(dimension),
             throttledCoords as any,
             this.model.world.sampledBy(
-                // THINKME: Is there a better way to do this?
                 Bacon.combineAsArray(
-                    this.model.selectedPortal(dimension),
+                    this.model.portals(dimension),
+                    this.model.selectedPortal(dimension) as any,
                     throttledCoords as any)) as any)
             .onValue(([sel, pt, w]: any) => this.updateInfo(sel, pt, w));
     }
@@ -88,17 +99,38 @@ export class CoordsInfoView<D extends Dimension> {
 
             if (linked) {
                 // And there is a valid destination.
-                this.divInfo.textContent =
-                    `This portal is linked up with "${linked.name}"` +
-                    ` in the ${linked.dimension} located at ${linked.location}.`;
+                const frag = this.tmplSelectedLinked.content.cloneNode(true) as DocumentFragment;
+
+                const name = frag.querySelector("span[data-for='name']")! as HTMLSpanElement;
+                name.textContent = linked.name;
+                name.style.setProperty("color", linked.color.toString());
+
+                const dim = frag.querySelector("span[data-for='dimension']")! as HTMLSpanElement;
+                dim.textContent = linked.dimension.toString();
+
+                const loc = frag.querySelector("span[data-for='location']")! as HTMLSpanElement;
+                loc.textContent = linked.location.toString();
+
+                this.divInfo.appendChild(frag);
             }
             else {
                 // But there are no valid destinations.
-                const nominal = this.dimension.scaleAndRestrictForPortal(pt);
-                this.divInfo.textContent =
-                    `This portal has no destinations. When someone enters it, the game` +
-                    ` will create a new portal somewhere around ${nominal} in the` +
-                    ` ${this.dimension.portalOpposite} since there are no portals nearby.`;
+                const oppositeD = this.dimension.portalOpposite as any;
+                const nominal   = this.dimension.scaleAndRestrictForPortal(pt);
+
+                const frag = this.tmplSelectedUnlinked.content.cloneNode(true) as DocumentFragment;
+
+                const loc = frag.querySelector("a[data-for='location']")! as HTMLAnchorElement;
+                loc.textContent = nominal.toString();
+                loc.addEventListener("click", ev => {
+                    ev.preventDefault();
+                    this.onCoordsLinkClicked(oppositeD, nominal);
+                });
+
+                const dim = frag.querySelector("span[data-for='dimension']")! as HTMLSpanElement;
+                dim.textContent = oppositeD.toString();
+
+                this.divInfo.appendChild(frag);
             }
         }
         else {
@@ -108,30 +140,50 @@ export class CoordsInfoView<D extends Dimension> {
 
             if (linked) {
                 // But there is a valid destination.
-                this.divInfo.appendChild(
-                    document.createTextNode(
-                        "If a portal is created here, it will link up with "));
+                const frag = this.tmplUnselectedLinked.content.cloneNode(true) as DocumentFragment;
 
-                const a = document.createElement("a");
-                a.textContent = linked.name;
-                a.addEventListener('click', ev => {
+                const name = frag.querySelector("a[data-for='name']")! as HTMLAnchorElement;
+                name.textContent = linked.name;
+                name.addEventListener("click", ev => {
                     ev.preventDefault();
-                    this.model.selectPortal(linked.dimension, linked);
+                    this.onPortalLinkClicked(linked);
                 });
-                this.divInfo.appendChild(a);
 
-                this.divInfo.appendChild(
-                    document.createTextNode(
-                        ` in the ${linked.dimension} located at ${linked.location}.`));
+                const dim = frag.querySelector("span[data-for='dimension']")! as HTMLSpanElement;
+                dim.textContent = linked.dimension.toString();
+
+                const loc = frag.querySelector("span[data-for='location']")! as HTMLSpanElement;
+                loc.textContent = linked.location.toString();
+
+                this.divInfo.appendChild(frag);
             }
             else {
                 // And there are no valid destinations either.
-                const nominal = this.dimension.scaleAndRestrictForPortal(pt);
-                this.divInfo.textContent =
-                    `If a portal is created here, the game will create a new portal` +
-                    ` somewhere around ${nominal} in the ${this.dimension.portalOpposite}` +
-                    ` since there are no portals nearby.`;
+                const oppositeD = this.dimension.portalOpposite as any;
+                const nominal   = this.dimension.scaleAndRestrictForPortal(pt);
+
+                const frag = this.tmplUnselectedUnlinked.content.cloneNode(true) as DocumentFragment;
+
+                const loc = frag.querySelector("a[data-for='location']")! as HTMLAnchorElement;
+                loc.textContent = nominal.toString();
+                loc.addEventListener("click", ev => {
+                    ev.preventDefault();
+                    this.onCoordsLinkClicked(oppositeD, nominal);
+                });
+
+                const dim = frag.querySelector("span[data-for='dimension']")! as HTMLSpanElement;
+                dim.textContent = oppositeD.toString();
+
+                this.divInfo.appendChild(frag);
             }
         }
+    }
+
+    private onPortalLinkClicked<D1 extends Dimension>(p: Portal<D1>) {
+        this.model.selectPortal(p.dimension, p);
+    }
+
+    private onCoordsLinkClicked<D1 extends Dimension>(dim: D, pt: Point) {
+        this.model.currentCoords(dim, pt);
     }
 }
