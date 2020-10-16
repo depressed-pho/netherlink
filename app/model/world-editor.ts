@@ -173,6 +173,13 @@ export class WorldEditorModel {
         this.selectedPortalBus(dimension).push(portal);
     }
 
+    public addPortal<D extends Dimension>(dimension: D, portal: Portal<D>) {
+        this.selModel.modifyActiveWorld((w: World) => {
+            w.portals(dimension).add(portal);
+        });
+        this.selectedPortalBus(dimension).push(portal);
+    }
+
     public deletePortal<D extends Dimension>(dimension: D, portal: Portal<D>) {
         this.selectedPortalBus(dimension).push(null);
         this.selModel.modifyActiveWorld((w: World) => {

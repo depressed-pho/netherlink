@@ -2,9 +2,11 @@ import * as Bacon from 'baconjs';
 import { confirm } from './confirm';
 import { Dimension, Overworld, Nether } from 'netherlink/dimension';
 import { parseHTML } from 'netherlink/parse-html';
+import { Point } from 'netherlink/point';
 import { Portal } from 'netherlink/portal';
 import { World } from 'netherlink/world';
 import { WorldEditorModel } from '../model/world-editor';
+import * as ModalNewPortal from './portal-list/new';
 import htmlPortalList from './portal-list.html';
 
 export class PortalListView<D extends Dimension> {
@@ -39,10 +41,16 @@ export class PortalListView<D extends Dimension> {
 
         /* The "New portal" button is enabled when no portals are
          * selected, and will open a modal window when clicked. */
-        this.btnNew = this.pane.querySelector("button[data-for='create']")! as HTMLButtonElement;
+        this.btnNew   = this.pane.querySelector("button[data-for='create']")! as HTMLButtonElement;
         this.selectedPortal.onValue(sel => {
             this.btnNew.disabled = sel != null;
         });
+        const newClicked = Bacon.fromEvent(this.btnNew, 'click');
+        Bacon.combineAsArray(
+            this.world,
+            this.model.currentCoords(dimension) as any)
+            .sampledBy(newClicked)
+            .onValue(([w, pt]: any) => this.onNewPortal(w, pt));
 
         /* The "Delete portal" button is enabled when a portal is
          * selected. */
@@ -77,6 +85,17 @@ export class PortalListView<D extends Dimension> {
 
     public get fragment(): DocumentFragment {
         return this.pane;
+    }
+
+    private async onNewPortal(w: World, pt: Point) {
+        let p: Portal<D>;
+        try {
+            p = await ModalNewPortal.prompt(w, this.dimension, pt);
+        }
+        catch {
+            return; // Canceled
+        }
+        this.model.addPortal(this.dimension, p);
     }
 
     private onDeletePortal(p: Portal<D>) {

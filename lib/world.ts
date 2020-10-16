@@ -2,10 +2,10 @@ import { Dimension, Overworld, Nether, overworld, nether } from 'netherlink/dime
 import { Portal } from 'netherlink/portal';
 import { PortalSet } from 'netherlink/portal/set';
 import * as uuid from 'uuid';
+import Color = require('color');
 
 // FIXME: remove these
 import { Point } from 'netherlink/point';
-import Color = require('color');
 
 export type WorldID = string; // UUID v1
 
@@ -51,6 +51,41 @@ export class World {
         else {
             throw new Error(`Unsupported dimension: ${dimension}`);
         }
+    }
+
+    get newPortalNameCandidate(): string {
+        const names = new Set<string>();
+        for (let p of this.portalsInOverworld) {
+            names.add(p.name);
+        }
+        for (let p of this.portalsInNether) {
+            names.add(p.name);
+        }
+
+        const nPortals = this.portalsInOverworld.size + this.portalsInNether.size;
+        if (!names.has(`Portal #${nPortals + 1}`)) {
+            return `Portal #${nPortals + 1}`;
+        }
+
+        for (let i = 1;; i++) {
+            if (!names.has(`Portal #${i}`)) {
+                return `Portal #${i}`;
+            }
+        }
+    }
+
+    get newPortalColorCandidate(): Color {
+        // hsv: s = 1.0, v = 0.4
+        // hsl: l = 0.2, s = 1.0
+
+        /* We generate a color in HSV color model where saturation and
+         * value are both fixed at 100% and 40% respectively. Hue is
+         * chosen randomly. */
+        return new Color({
+            h: Math.floor(Math.random() * 360),
+            s: 100,
+            v: 40
+        });
     }
 
     /** Compare two worlds by their ID. */

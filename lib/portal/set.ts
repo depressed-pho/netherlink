@@ -9,6 +9,10 @@ export class PortalSet<D extends Dimension> implements Iterable<Portal<D>> {
         this.map = new Map<string, Portal<D>>();
     }
 
+    public get size(): number {
+        return this.map.size;
+    }
+
     public [Symbol.iterator](): Iterator<Portal<D>> {
         return this.map.values();
     }

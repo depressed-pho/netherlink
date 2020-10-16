@@ -16,12 +16,12 @@ export class ModalNewWorldView {
     public constructor(model: WorldSelectorModel) {
         this.model = model;
 
-        let addListeners = false;
+        let init = false;
         if (!document.getElementById("modalNewWorld")) {
             const body = document.querySelector("html > body")!;
             body.insertAdjacentHTML("beforeend", htmlNew);
             $("#modalNewWorld").foundation();
-            addListeners = true;
+            init = true;
         }
 
         this.modalNew  = document.getElementById("modalNewWorld")! as HTMLDivElement;
@@ -30,12 +30,13 @@ export class ModalNewWorldView {
         this.btnCancel = this.modalNew.querySelector("button[name='cancel']")! as HTMLButtonElement;
         this.btnSubmit = this.modalNew.querySelector("button[type='submit']")! as HTMLButtonElement;
 
-        if (addListeners) {
+        if (init) {
             this.btnCancel.addEventListener("click", ev => this.close());
             this.form.addEventListener("submit", ev => {
                 ev.preventDefault();
-                this.submit();
+                this.onSubmit();
             });
+            this.fldName.value = "";
         }
     }
 
@@ -54,7 +55,7 @@ export class ModalNewWorldView {
         $(this.modalNew).foundation("close");
     }
 
-    private submit(): void {
+    private onSubmit(): void {
         const name  = this.fldName.value;
         const world = this.model.newWorld(name);
 

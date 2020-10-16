@@ -10,10 +10,10 @@ export class WorldSelectorView {
     private readonly selWorld: HTMLSelectElement;
 
     private readonly btnNew: HTMLButtonElement;
-    private readonly modalNew: ModalNewWorldView;
-
     private readonly btnDelete: HTMLButtonElement;
     private readonly btnRename: HTMLButtonElement;
+
+    private readonly modalNew: ModalNewWorldView;
 
     public constructor(model: WorldSelectorModel) {
         this.model = model;

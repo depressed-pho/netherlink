@@ -51,12 +51,17 @@ export class LocalStorage implements NLStorage {
     }
 
     get newWorldNameCandidate(): string {
-        if (!this.worlds.has(`World #${this.worlds.size + 1}`)) {
+        const names = new Set<string>();
+        for (let w of this) {
+            names.add(w.name);
+        }
+
+        if (!names.has(`World #${this.worlds.size + 1}`)) {
             return `World #${this.worlds.size + 1}`;
         }
 
         for (let i = 1;; i++) {
-            if (!this.worlds.has(`World #${i}`)) {
+            if (!names.has(`World #${i}`)) {
                 return `World #${i}`;
             }
         }
