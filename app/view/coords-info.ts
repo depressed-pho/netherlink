@@ -114,6 +114,10 @@ export class CoordsInfoView<D extends Dimension> {
 
                 const a = document.createElement("a");
                 a.textContent = linked.name;
+                a.addEventListener('click', ev => {
+                    ev.preventDefault();
+                    this.model.selectPortal(linked.dimension, linked);
+                });
                 this.divInfo.appendChild(a);
 
                 this.divInfo.appendChild(

@@ -95,7 +95,7 @@ export class PortalListView<D extends Dimension> {
         catch {
             return; // Canceled
         }
-        this.model.addPortal(this.dimension, p);
+        this.model.addPortal(p);
     }
 
     private onDeletePortal(p: Portal<D>) {
@@ -108,7 +108,7 @@ export class PortalListView<D extends Dimension> {
             "Yes, delete it",
             "No, keep it"
         ).catch(() => {
-            this.model.deletePortal(this.dimension, p);
+            this.model.deletePortal(p);
         });
     }
 
