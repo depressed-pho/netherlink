@@ -1,5 +1,6 @@
 import * as Bacon from 'baconjs';
 import * as Hammer from 'hammerjs';
+import Color = require('color');
 import { Dimension } from 'netherlink/dimension';
 import { parseHTML } from 'netherlink/parse-html';
 import { Point } from 'netherlink/point';
@@ -38,9 +39,18 @@ export class AtlasView<D extends Dimension> {
 
         /* But since resizing and redrawing canvases is quite
          * expensive, we need to throttle the events. */
-        const windowResized = Bacon.fromEvent(window, 'resize');
         const throttleMilliSec = 10;
-        windowResized.throttle(throttleMilliSec).onValue(ev => this.resize());
+        const windowResized = Bacon.fromEvent(window, 'resize').throttle(throttleMilliSec);
+
+        /* The content of the atlas is determined by the center,
+         * scale, and size. Redraw it whenever either of them
+         * changes..
+         */
+        Bacon.combineAsArray(this.center, this.scale as any, windowResized as any)
+            .onValue(([c, sc, ev]: any) => {
+                this.resize();
+                this.redraw(c, sc);
+            });
 
         /* The scale slider should be synchronized with the scale
          * property. */
@@ -165,8 +175,23 @@ export class AtlasView<D extends Dimension> {
              * can't find a way to do it. I'm a CSS noob. */
             this.fldScale.style.setProperty(
                 'height', Math.floor(this.canvas.height * (2/10)) + 'px');
+        }
+    }
 
-            // FIXME: redraw
+    private bgColor(): string {
+        // Maybe we should cache this?
+        const styles = window.getComputedStyle(this.canvas);
+        const color  = styles.getPropertyValue("background-color");
+        return color ? color : 'rgba(0, 0, 0, 0)';
+    }
+
+    private redraw(center: Point, scale: number): void {
+        const ctx = this.canvas.getContext("2d");
+        if (ctx) {
+            /* First we need to clear the entire canvas. */
+            ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            ctx.fillStyle = this.bgColor();
+            ctx.fill();
         }
     }
 }
