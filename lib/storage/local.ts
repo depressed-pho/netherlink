@@ -1,3 +1,4 @@
+import { Dimension } from 'netherlink/dimension';
 import { NLStorage } from 'netherlink/storage';
 import { World, WorldID } from 'netherlink/world';
 
@@ -5,6 +6,7 @@ export class LocalStorage implements NLStorage {
     private backend?: Storage;
     private worlds: Map<WorldID, World>;
     private _activeWorld: WorldID;
+    private _atlasScale: Map<Dimension, number>;
 
     public constructor() {
         /* The local storage isn't always available. The browser may
@@ -31,6 +33,9 @@ export class LocalStorage implements NLStorage {
             // FIXME: Load this.
             this._activeWorld = this.worlds.keys().next().value;
         }
+
+        // FIXME: load this.
+        this._atlasScale = new Map<Dimension, number>();
     }
 
     get isAvailable(): boolean {
@@ -91,6 +96,19 @@ export class LocalStorage implements NLStorage {
 
         // FIXME: delete it.
         this.worlds.delete(id);
+    }
+
+    public atlasScale<D extends Dimension>(dimension: D): number;
+    public atlasScale<D extends Dimension>(dimension: D, scale: number): void;
+    public atlasScale<D extends Dimension>(dimension: D, scale?: number): any {
+        if (scale) {
+            this._atlasScale.set(dimension, scale);
+            // FIXME: save this.
+        }
+        else {
+            const s = this._atlasScale.get(dimension);
+            return s ? s : 4;
+        }
     }
 }
 

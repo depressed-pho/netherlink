@@ -1,0 +1,33 @@
+.nl-atlas-container {
+    position: relative;
+
+    .atlas-scale-container {
+        position: absolute;
+        margin: 0.5em 0.5em;
+
+        i {
+            display: block;
+        }
+
+        input.atlas-scale {
+            width: 0.8em;
+            /* This is only the default height. The actual height will be computed
+             * with JavaScript. */
+            height: 10ex;
+            max-height: 80%;
+
+            /* Reverse the direction. The higher the nob is, the smaller the scale
+             * factor is. */
+            transform: rotateX(180deg);
+        }
+    }
+
+    canvas.atlas {
+        cursor: move;
+
+        /* We need to remove the canvas from the normal document flow,
+         * because we really don't want its parent to determine its
+         * size based on the size of our canvas. */
+        position: absolute;
+    }
+}

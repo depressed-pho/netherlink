@@ -46,7 +46,7 @@ export class CoordsInfoView<D extends Dimension> {
             this.fldZ.value = String(pt.z);
         });
         for (let fld of [this.fldX, this.fldY, this.fldZ]) {
-            fld.addEventListener('change', ev => {
+            fld.addEventListener('input', ev => {
                 this.model.currentCoords(
                     dimension,
                     new Point(

@@ -1,3 +1,4 @@
+import { Dimension } from 'netherlink/dimension';
 import { World, WorldID } from 'netherlink/world';
 
 /** An interface for saving world files in a browser (or somewhere
@@ -40,4 +41,9 @@ export interface NLStorage extends Iterable<World> {
      * an inactive one, or otherwise it raises an error.
      */
     deleteWorld(id: WorldID): void;
+
+    /** Scale of atlases from 1x to 12x, defaulted to 4x.
+     */
+    atlasScale<D extends Dimension>(dimension: D): number;
+    atlasScale<D extends Dimension>(dimension: D, scale: number): void;
 }

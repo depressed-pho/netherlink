@@ -30,6 +30,14 @@ export class Point {
                this.z >= from.z && this.z < to.z;
     }
 
+    public offset(x: number, y: number, z: number): Point {
+        return new Point(this.x + x, this.y + y, this.z + z);
+    }
+
+    public round(): Point {
+        return new Point(Math.round(this.x), Math.round(this.y), Math.round(this.z));
+    }
+
     public static distance(p1: Point, p2: Point): number {
         return Math.sqrt(
             Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2) + Math.pow(p2.z - p1.z, 2));

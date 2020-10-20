@@ -221,4 +221,15 @@ export class WorldEditorModel {
             throw new Error(`Unsupported dimension: ${dimension}`);
         }
     }
+
+    public atlasScale<D extends Dimension>(dimension: D): Bacon.Property<number>;
+    public atlasScale<D extends Dimension>(dimension: D, scale: number): void;
+    public atlasScale<D extends Dimension>(dimension: D, scale?: number): any {
+        if (scale) {
+            this.selModel.atlasScale(dimension, scale);
+        }
+        else {
+            return this.selModel.atlasScale(dimension);
+        }
+    }
 }
