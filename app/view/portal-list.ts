@@ -6,6 +6,7 @@ import { Point } from 'netherlink/point';
 import { Portal } from 'netherlink/portal';
 import { World } from 'netherlink/world';
 import { WorldEditorModel } from '../model/world-editor';
+import * as ModalEditPortal from './portal-list/edit';
 import * as ModalNewPortal from './portal-list/new';
 import htmlPortalList from './portal-list.html';
 
@@ -67,6 +68,8 @@ export class PortalListView<D extends Dimension> {
         this.selectedPortal.onValue(sel => {
             this.btnEdit.disabled = sel == null;
         });
+        const editClicked = Bacon.fromEvent(this.btnEdit, 'click');
+        this.selectedPortal.sampledBy(editClicked).onValue(sel => this.onEditPortal(sel));
 
         /* The portal list table should be synchronized with one of
          * the portal lists, with sampling the value of the property
@@ -92,24 +95,52 @@ export class PortalListView<D extends Dimension> {
         try {
             p = await ModalNewPortal.prompt(w, this.dimension, pt);
         }
-        catch {
-            return; // Canceled
+        catch (e) {
+            if (e === undefined) {
+                return; // Canceled
+            }
+            else {
+                throw e;
+            }
         }
         this.model.addPortal(p);
     }
 
-    private onDeletePortal(p: Portal<D>) {
+    private async onEditPortal(p: Portal<D>) {
+        let np: Portal<D>;
+        try {
+            np = await ModalEditPortal.prompt(p);
+        }
+        catch (e) {
+            if (e === undefined) {
+                return; // Canceled
+            }
+            else {
+                throw e;
+            }
+        }
+        this.model.addPortal(np);
+    }
+
+    private async onDeletePortal(p: Portal<D>) {
         /* It's very easy to mistap a small button on a touch
          * screen. If we deleted it without confirmation, users would
          * not be happy. */
-        confirm(
-            `Do you really want to delete the portal "${p.name}", ` +
-                `located at ${p.location} in the ${this.dimension}?`,
-            "Yes, delete it",
-            "No, keep it"
-        ).catch(() => {
-            this.model.deletePortal(p);
-        });
+        try {
+            await confirm(
+                `Do you really want to delete the portal "${p.name}", ` +
+                    `located at ${p.location} in the ${this.dimension}?`,
+                "Yes, delete it",
+                "No, keep it");
+        }
+        catch (e) {
+            if (e === undefined) {
+                this.model.deletePortal(p);
+            }
+            else {
+                throw e;
+            }
+        }
     }
 
     private refreshPortals(set: Set<Portal<D>>, selected: Portal<D>|null, w: World) {

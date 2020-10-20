@@ -66,25 +66,32 @@ export class WorldSelectorView {
         }
     }
 
-    private onDeleteWorld(): void {
+    private async onDeleteWorld() {
         const active = this.selWorld.options.item(this.selWorld.selectedIndex)!;
-        confirm(
-            `Do you really want to delete the world "${active.text}"?` +
-                " Once it's deleted, you can't recover it unless you have exported it to a file.",
-            "Yes, delete it",
-            "No, keep it"
-        ).catch(() => {
-            /* As for the next world to activate, we prefer the next
-             * one in the list over the previous one.
-             */
-            const nextIndex =
-                this.selWorld.selectedIndex < this.selWorld.options.length -1
-                ? this.selWorld.selectedIndex + 1
-                : this.selWorld.selectedIndex - 1;
-            const next = this.selWorld.options.item(nextIndex)!;
+        try {
+            await confirm(
+                `Do you really want to delete the world "${active.text}"?` +
+                    " Once it's deleted, you can't recover it unless you have exported it to a file.",
+                "Yes, delete it",
+                "No, keep it");
+        }
+        catch (e) {
+            if (e === undefined) {
+                /* As for the next world to activate, we prefer the next
+                 * one in the list over the previous one.
+                 */
+                const nextIndex =
+                    this.selWorld.selectedIndex < this.selWorld.options.length -1
+                    ? this.selWorld.selectedIndex + 1
+                    : this.selWorld.selectedIndex - 1;
+                const next = this.selWorld.options.item(nextIndex)!;
 
-            this.model.activateWorld(next.value);
-            this.model.deleteWorld(active.value);
-        });
+                this.model.activateWorld(next.value);
+                this.model.deleteWorld(active.value);
+            }
+            else {
+                throw e;
+            }
+        }
     }
 }

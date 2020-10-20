@@ -173,6 +173,10 @@ export class WorldEditorModel {
         this.selectedPortalBus(dimension).push(portal);
     }
 
+    /** Add a new portal to the world. If there is already a portal at
+     * the same coords in the same dimension, the existing one will be
+     * replaced.
+     */
     public addPortal<D extends Dimension>(portal: Portal<D>) {
         this.selModel.modifyActiveWorld((w: World) => {
             w.portals(portal.dimension).add(portal);

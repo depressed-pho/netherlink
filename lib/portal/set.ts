@@ -17,6 +17,9 @@ export class PortalSet<D extends Dimension> implements Iterable<Portal<D>> {
         return this.map.values();
     }
 
+    /** Add a new portal to the portal set. If there is already a
+     * portal at the same coords, the existing one will be replaced.
+     */
     public add(portal: Portal<D>): this {
         this.map.set(portal.location.toString(), portal);
         return this;
