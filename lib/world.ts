@@ -27,7 +27,7 @@ export class World {
                 overworld,
                 new Point(1, 1, 1),
                 "Portal #1",
-                Color.rgb(100, 100, 0)));
+                Color.rgb(255, 0, 0)));
 
         this.portalsInNether.add(
             new Portal<Nether>(

@@ -107,7 +107,7 @@ export class LocalStorage implements NLStorage {
         }
         else {
             const s = this._atlasScale.get(dimension);
-            return s ? s : 4;
+            return s ? s : 1.5;
         }
     }
 }

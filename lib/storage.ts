@@ -42,7 +42,7 @@ export interface NLStorage extends Iterable<World> {
      */
     deleteWorld(id: WorldID): void;
 
-    /** Scale of atlases from 1x to 12x, defaulted to 4x.
+    /** Scale of atlases from 0.5x to 8x, defaulted to 1.5x.
      */
     atlasScale<D extends Dimension>(dimension: D): number;
     atlasScale<D extends Dimension>(dimension: D, scale: number): void;

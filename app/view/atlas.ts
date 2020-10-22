@@ -1,9 +1,12 @@
 import * as Bacon from 'baconjs';
 import * as Hammer from 'hammerjs';
 import Color = require('color');
+import { Chunk } from 'netherlink/chunk';
 import { Dimension } from 'netherlink/dimension';
 import { parseHTML } from 'netherlink/parse-html';
-import { Point } from 'netherlink/point';
+import { Point, Point2D } from 'netherlink/point';
+import { Portal } from 'netherlink/portal';
+import { World } from 'netherlink/world';
 import { WorldEditorModel } from '../model/world-editor';
 import htmlAtlas from './atlas.html';
 
@@ -43,13 +46,17 @@ export class AtlasView<D extends Dimension> {
         const windowResized = Bacon.fromEvent(window, 'resize').throttle(throttleMilliSec);
 
         /* The content of the atlas is determined by the center,
-         * scale, and size. Redraw it whenever either of them
-         * changes..
+         * scale, world, selected portals on both sides, and
+         * size. Redraw it whenever any of them changes.
          */
-        Bacon.combineAsArray(this.center, this.scale as any, windowResized as any)
-            .onValue(([c, sc, ev]: any) => {
+        Bacon.combineAsArray(
+            this.center,
+            this.scale as any,
+            model.world as any,
+            windowResized as any)
+            .onValue(([c, sc, w, ev]: any) => {
                 this.resize();
-                this.redraw(c, sc);
+                this.redraw(c, sc, w);
             });
 
         /* The scale slider should be synchronized with the scale
@@ -167,14 +174,18 @@ export class AtlasView<D extends Dimension> {
     private resize() {
         const parent = this.canvas.parentElement;
         if (parent) {
-            this.canvas.width  = parent.clientWidth;
-            this.canvas.height = parent.clientHeight;
+            if (this.canvas.width  != parent.clientWidth ||
+                this.canvas.height != parent.clientHeight) {
 
-            /* And recalculate the height of the scale slider. I know
-             * this should be done solely in the style sheet but I
-             * can't find a way to do it. I'm a CSS noob. */
-            this.fldScale.style.setProperty(
-                'height', Math.floor(this.canvas.height * (2/10)) + 'px');
+                this.canvas.width  = parent.clientWidth;
+                this.canvas.height = parent.clientHeight;
+
+                /* And recalculate the height of the scale slider. I
+                 * know this should be done solely in the style sheet
+                 * but I can't find a way to do it. I'm a CSS noob. */
+                this.fldScale.style.setProperty(
+                    'height', Math.floor(this.canvas.height * (2/10)) + 'px');
+            }
         }
     }
 
@@ -185,13 +196,102 @@ export class AtlasView<D extends Dimension> {
         return color ? color : 'rgba(0, 0, 0, 0)';
     }
 
-    private redraw(center: Point, scale: number): void {
+    private redraw(center: Point, scale: number, world: World): void {
         const ctx = this.canvas.getContext("2d");
         if (ctx) {
+            /* The center of the atlas should be at center of a block,
+             * not on a border. */
+            center = center.offset(0.5, 0, 0.5);
+
             /* First we need to clear the entire canvas. */
             ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             ctx.fillStyle = this.bgColor();
             ctx.fill();
+
+            /* For each chunk visible from the atlas we draw a rectangle
+             * for it.
+             */
+            const topLeft = new Point2D(
+                center.x - (this.canvas.width  / 2) / scale,
+                center.z - (this.canvas.height / 2) / scale);
+            const bottomRight = new Point2D(
+                topLeft.x + this.canvas.width  / scale,
+                topLeft.z + this.canvas.height / scale);
+
+            /* A chunk is visible if any of its four corners is
+             * visible. */
+            function isPointVisible(p: Point): boolean;
+            function isPointVisible(p: Point2D): boolean;
+            function isPointVisible(p: any): boolean {
+                return p.x >= topLeft.x     && p.z >= topLeft.z
+                    && p.x <  bottomRight.x && p.z <  bottomRight.z;
+            }
+            function isChunkVisible(c: Chunk): boolean {
+                return isPointVisible(c.origin)
+                    || isPointVisible(c.offset(1, 0).origin)
+                    || isPointVisible(c.offset(0, 1).origin)
+                    || isPointVisible(c.offset(1, 1).origin);
+            }
+            function worldToAtlas(p: Point): Point2D;
+            function worldToAtlas(p: Point2D): Point2D;
+            function worldToAtlas(p: any): Point2D {
+                return new Point2D(
+                    (p.x - topLeft.x) * scale,
+                    (p.z - topLeft.z) * scale);
+            }
+            ctx.strokeStyle = 'rgba(0, 0, 0, 5%)';
+            ctx.lineWidth   = 1.0;
+            for (let c = new Chunk(topLeft); isChunkVisible(c); c = c.offset(1, 0)) {
+                for (let d = c; isChunkVisible(d); d = d.offset(0, 1)) {
+                    const origin = worldToAtlas(d.origin);
+                    ctx.strokeRect(
+                        Math.floor(origin.x), Math.floor(origin.z),
+                        16 * scale, 16 * scale);
+                }
+            }
+
+            /* Plot portals in this dimension if they are visible. */
+            const portalPointRadius = 4; // px
+            const portalPointWidth  = 1; // px
+            function isPortalVisible(p: Point): boolean {
+                return isPointVisible(
+                    p.offset(
+                        -portalPointRadius/2 - portalPointWidth, 0,
+                        -portalPointRadius/2 - portalPointWidth)) ||
+                    isPointVisible(
+                        p.offset(
+                            portalPointRadius/2 + portalPointWidth, 0,
+                            portalPointRadius/2 + portalPointWidth));
+            }
+            ctx.lineWidth = portalPointWidth;
+            for (const portal of world.portals(this.dimension)) {
+                const portalCenter = portal.location.offset(0.5, 0, 0.5);
+                if (isPortalVisible(portalCenter)) {
+                    const centerA = worldToAtlas(portalCenter);
+                    ctx.strokeStyle = portal.color.string();
+                    ctx.fillStyle   = ctx.strokeStyle;
+                    ctx.beginPath();
+                    ctx.arc(
+                        Math.floor(centerA.x), Math.floor(centerA.z),
+                        portalPointRadius, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    ctx.fill();
+                }
+            }
+
+            /* Draw a cross-hair at the center of atlas. */
+            const pointerRadius = 10; // px
+            const atlasCenter   = worldToAtlas(center);
+            ctx.strokeStyle = 'rgba(0, 0, 0, 80%)';
+            ctx.lineWidth   = 1.0;
+
+            ctx.beginPath();
+            ctx.moveTo(atlasCenter.x - pointerRadius/2, atlasCenter.z);
+            ctx.lineTo(atlasCenter.x + pointerRadius/2, atlasCenter.z);
+
+            ctx.moveTo(atlasCenter.x, atlasCenter.z - pointerRadius/2);
+            ctx.lineTo(atlasCenter.x, atlasCenter.z + pointerRadius/2);
+            ctx.stroke();
         }
     }
 }
