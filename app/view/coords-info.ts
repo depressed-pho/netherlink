@@ -134,7 +134,7 @@ export class CoordsInfoView<D extends Dimension> {
                         this.divInfo.appendChild(bidi.content);
                     }
                     else {
-                        // There's a closer one than this.
+                        // The linkage is suboptimal.
                         const oneWay = this.divInfo.querySelector("template[data-for='one-way'][data-reason='suboptimal']")! as HTMLTemplateElement;
 
                         const name = oneWay.content.querySelector("a[data-for='name']")! as HTMLAnchorElement;
@@ -240,7 +240,7 @@ export class CoordsInfoView<D extends Dimension> {
                         }
                     }
                     else {
-                        // There's a closer one than this.
+                        // It's gonna be suboptimal.
                         const oneWay = this.divInfo.querySelector("template[data-for='one-way'][data-reason='suboptimal']")! as HTMLTemplateElement;
 
                         const name = oneWay.content.querySelector("a[data-for='name']")! as HTMLAnchorElement;
