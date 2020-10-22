@@ -1,0 +1,30 @@
+package netherlink;
+syntax = "proto3";
+
+message World {
+  string id = 1;
+  string name = 2;
+  map<string, PortalSet> dimensions = 3; // Either "overworld" or "nether"
+}
+
+message PortalSet {
+  repeated Portal portals = 1;
+}
+
+message Portal {
+  Point location = 1;
+  string Name = 2;
+  Color color = 3;
+}
+
+message Point {
+  sint64 x = 1;
+  sint64 y = 2;
+  sint64 z = 3;
+}
+
+message Color {
+  int32 r = 1;
+  int32 g = 2;
+  int32 b = 3;
+}

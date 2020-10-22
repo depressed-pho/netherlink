@@ -1,3 +1,6 @@
+import { Message } from 'protobufjs/minimal';
+import pbRoot from './world.proto';
+
 export class Point {
     public readonly x: number;
     public readonly y: number;
@@ -41,6 +44,11 @@ export class Point {
     public static distance(p1: Point, p2: Point): number {
         return Math.sqrt(
             Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2) + Math.pow(p2.z - p1.z, 2));
+    }
+
+    public static toMessage(p: Point): Message<Point> {
+        const MsgPoint = pbRoot.netherlink.Point;
+        return MsgPoint.create(p);
     }
 }
 

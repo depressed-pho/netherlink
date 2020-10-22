@@ -88,13 +88,30 @@ module.exports = (env, argv) => {
                     ]
                 },
                 {
-                    test: /\.html/i,
+                    test: /\.html$/i,
                     use: [
                         {
                             loader: 'html-loader',
                             options: {
                                 minimize: true,
                                 esModule: true
+                            }
+                        }
+                    ]
+                },
+                {
+                    test: /\.proto$/i,
+                    use: [
+                        {
+                            loader: 'protobuf-preloader'
+                            /* The loader doesn't support pbts so we
+                             * have to resort to the raw js
+                             * mode. There's a PR but it hasn't been
+                             * merged for years:
+                             * https://github.com/kmontag/protobufjs-loader/pull/2
+                             */,
+                            options: {
+                                pbjsArgs: ['--wrap', 'es6']
                             }
                         }
                     ]
