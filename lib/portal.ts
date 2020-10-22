@@ -52,6 +52,11 @@ export class Portal<D extends Dimension> {
         return closestP;
     }
 
+    public searchArea(): [Point, Point] {
+        const nominal: Point = this.dimension.scaleForPortal(this.location);
+        return this.dimension.portalOpposite.portalSearchArea(nominal);
+    }
+
     public equals(that: Portal<D>): boolean {
         return this.location.equals(that.location);
     }

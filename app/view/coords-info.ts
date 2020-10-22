@@ -101,9 +101,13 @@ export class CoordsInfoView<D extends Dimension> {
                 // And there is a valid destination.
                 const frag = this.tmplSelectedLinked.content.cloneNode(true) as DocumentFragment;
 
-                const name = frag.querySelector("span[data-for='name']")! as HTMLSpanElement;
+                const name = frag.querySelector("a[data-for='name']")! as HTMLAnchorElement;
                 name.textContent = linked.name;
                 name.style.setProperty("color", linked.color.toString());
+                name.addEventListener("click", ev => {
+                    ev.preventDefault();
+                    this.onPortalLinkClicked(linked);
+                });
 
                 const dim = frag.querySelector("span[data-for='dimension']")! as HTMLSpanElement;
                 dim.textContent = linked.dimension.toString();
@@ -112,6 +116,16 @@ export class CoordsInfoView<D extends Dimension> {
                 loc.textContent = linked.location.toString();
 
                 this.divInfo.appendChild(frag);
+
+                if (!pt.within(linked.searchArea())) {
+                    const oneWay = this.divInfo.querySelector("template[data-for='one-way']")! as HTMLTemplateElement;
+
+                    const name = oneWay.content.querySelector("span[data-for='name']")! as HTMLSpanElement;
+                    name.textContent = linked.name;
+                    name.style.setProperty("color", linked.color.toString());
+
+                    this.divInfo.appendChild(oneWay.content);
+                }
             }
             else {
                 // But there are no valid destinations.
@@ -144,6 +158,7 @@ export class CoordsInfoView<D extends Dimension> {
 
                 const name = frag.querySelector("a[data-for='name']")! as HTMLAnchorElement;
                 name.textContent = linked.name;
+                name.style.setProperty("color", linked.color.toString());
                 name.addEventListener("click", ev => {
                     ev.preventDefault();
                     this.onPortalLinkClicked(linked);
@@ -156,6 +171,16 @@ export class CoordsInfoView<D extends Dimension> {
                 loc.textContent = linked.location.toString();
 
                 this.divInfo.appendChild(frag);
+
+                if (!pt.within(linked.searchArea())) {
+                    const oneWay = this.divInfo.querySelector("template[data-for='one-way']")! as HTMLTemplateElement;
+
+                    const name = oneWay.content.querySelector("span[data-for='name']")! as HTMLSpanElement;
+                    name.textContent = linked.name;
+                    name.style.setProperty("color", linked.color.toString());
+
+                    this.divInfo.appendChild(oneWay.content);
+                }
             }
             else {
                 // And there are no valid destinations either.

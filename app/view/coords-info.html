@@ -28,9 +28,13 @@
 
         <template data-selected="true" data-linked="true">
           This portal is linked up with
-          <span data-for="name"><!-- style="color: ..." --></span>
+          <a data-for="name"></a>
           in the <span data-for="dimension"></span>
           located at <span data-for="location"></span>.
+          <template data-for="one-way">
+            But since it's outside of the search range of <span
+            data-for="name"></span>, this portal is always one-way.
+          </template>
         </template>
 
         <template data-selected="true" data-linked="false">
@@ -46,6 +50,11 @@
           <a data-for="name"></a>
           in the <span data-for="dimension"></span>
           located at <span data-for="location"></span>.
+          <template data-for="one-way">
+            But since it's outside of the search range of <span
+            data-for="name"></span>, the portal will always be
+            one-way.
+          </template>
         </template>
 
         <template data-selected="false" data-linked="false">

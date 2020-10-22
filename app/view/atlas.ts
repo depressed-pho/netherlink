@@ -6,6 +6,7 @@ import { Dimension } from 'netherlink/dimension';
 import { parseHTML } from 'netherlink/parse-html';
 import { Point, Point2D } from 'netherlink/point';
 import { Portal } from 'netherlink/portal';
+import { PortalSet } from 'netherlink/portal/set';
 import { World } from 'netherlink/world';
 import { WorldEditorModel } from '../model/world-editor';
 import htmlAtlas from './atlas.html';
@@ -53,10 +54,12 @@ export class AtlasView<D extends Dimension> {
             this.center,
             this.scale as any,
             model.world as any,
+            model.selectedPortal(dimension) as any,
+            model.selectedPortal(dimension.portalOpposite) as any,
             windowResized as any)
-            .onValue(([c, sc, w, ev]: any) => {
+            .onValue(([c, sc, w, s1, s2, ev]: any) => {
                 this.resize();
-                this.redraw(c, sc, w);
+                this.redraw(c, sc, w, s1, s2);
             });
 
         /* The scale slider should be synchronized with the scale
@@ -196,7 +199,8 @@ export class AtlasView<D extends Dimension> {
         return color ? color : 'rgba(0, 0, 0, 0)';
     }
 
-    private redraw(center: Point, scale: number, world: World): void {
+    private redraw(center: Point, scale: number, world: World,
+                   selectedHere: Portal<D>|null, selectedThere: Portal<any>|null): void {
         const ctx = this.canvas.getContext("2d");
         if (ctx) {
             /* The center of the atlas should be at center of a block,
@@ -250,7 +254,34 @@ export class AtlasView<D extends Dimension> {
                 }
             }
 
-            /* Plot portals in this dimension if they are visible. */
+            /* If there is a selected portal on the opposite side,
+             * draw its search area in this dimension. */
+            function isAreaVisible(areaTopLeft: Point, areaBottomRight: Point): boolean {
+                // Return true if two areas overlap.
+                return areaTopLeft.x < bottomRight.x && areaBottomRight.x > topLeft.x
+                    && areaTopLeft.z < bottomRight.z && areaBottomRight.z > topLeft.z;
+            }
+            if (selectedThere) {
+                const [areaTopLeft, areaBottomRight] = selectedThere.searchArea();
+
+                if (isAreaVisible(areaTopLeft, areaBottomRight)) {
+                    const tlA = worldToAtlas(areaTopLeft);
+                    const brA = worldToAtlas(areaBottomRight);
+                    ctx.lineWidth   = 1;
+                    ctx.strokeStyle = selectedThere.color.fade(0.7).string();
+                    ctx.fillStyle   = selectedThere.color.fade(0.9).string();
+                    ctx.fillRect(
+                        Math.floor(tlA.x), Math.floor(tlA.z),
+                        Math.floor(brA.x - tlA.x), Math.floor(brA.z - tlA.z));
+                    ctx.strokeRect(
+                        Math.floor(tlA.x), Math.floor(tlA.z),
+                        Math.floor(brA.x - tlA.x), Math.floor(brA.z - tlA.z));
+                }
+            }
+
+            /* Plot portals in this dimension if they are
+             * visible. First labels, then circles. This is because we
+             * don't want circles to be overridden by labels. */
             const portalPointRadius = 4; // px
             const portalPointWidth  = 1; // px
             function isPortalVisible(p: Point): boolean {
@@ -263,20 +294,82 @@ export class AtlasView<D extends Dimension> {
                             portalPointRadius/2 + portalPointWidth, 0,
                             portalPointRadius/2 + portalPointWidth));
             }
-            ctx.lineWidth = portalPointWidth;
+            const visiblePortals: PortalDetails<D>[] = [];
             for (const portal of world.portals(this.dimension)) {
                 const portalCenter = portal.location.offset(0.5, 0, 0.5);
                 if (isPortalVisible(portalCenter)) {
-                    const centerA = worldToAtlas(portalCenter);
-                    ctx.strokeStyle = portal.color.string();
-                    ctx.fillStyle   = ctx.strokeStyle;
-                    ctx.beginPath();
-                    ctx.arc(
-                        Math.floor(centerA.x), Math.floor(centerA.z),
-                        portalPointRadius, 0, 2 * Math.PI);
-                    ctx.stroke();
-                    ctx.fill();
+                    /* Is this a portal currently selected? */
+                    const isSelected = selectedHere ? portal.equals(selectedHere) : false;
+
+                    /* Is this a portal linked with a selected portal
+                     * on the opposite side? */
+                    const isLinked = (() => {
+                        if (selectedThere) {
+                            const linked = selectedThere.linkedPortal(world);
+                            return linked ? portal.equals(linked as any) : false;
+                        }
+                        else {
+                            return false;
+                        }
+                    })();
+
+                    visiblePortals.push({portal, portalCenter, isSelected, isLinked});
                 }
+            }
+            for (const {portal, portalCenter, isSelected, isLinked} of visiblePortals) {
+                /* Label background */
+                const centerA = worldToAtlas(portalCenter);
+                const padding = 2; // px
+                const border  = 1; // px
+                const margin  = portalPointRadius/2 + 8; // px
+                const metrics = ctx.measureText(portal.name);
+                const width   =
+                    Math.abs(metrics.actualBoundingBoxLeft ) +
+                    Math.abs(metrics.actualBoundingBoxRight);
+                const height  =
+                    Math.abs(metrics.actualBoundingBoxAscent ) +
+                    Math.abs(metrics.actualBoundingBoxDescent);
+                ctx.fillStyle = isSelected ? 'white'
+                    : isLinked   ? portal.color.mix(Color("white"), 0.8).string()
+                    :              portal.color.string();
+                ctx.fillRect(
+                    Math.floor(centerA.x          - width/2 - padding),
+                    Math.floor(centerA.z - margin - height  - padding*2 - border),
+                    width  + padding*2,
+                    height + padding*2);
+
+                /* Label border */
+                ctx.strokeStyle = portal.color.string();
+                ctx.lineWidth = border;
+                ctx.strokeRect(
+                    Math.floor(centerA.x          - width/2 - padding   - border),
+                    Math.floor(centerA.z - margin - height  - padding*2 - border*2),
+                    width  + padding*2 + border*2,
+                    height + padding*2 + border*2);
+
+                /* Label text */
+                ctx.fillStyle = isSelected ? portal.color.string()
+                    : isLinked   ? portal.color.mix(Color("black"), 0.2).string()
+                    : 'white';
+                ctx.fillText(
+                    portal.name,
+                    Math.floor(centerA.x          - width/2),
+                    Math.floor(centerA.z - margin - metrics.actualBoundingBoxDescent - padding - border));
+            }
+            for (const {portal, portalCenter, isSelected, isLinked} of visiblePortals) {
+                /* A circle indicating the location of the portal. */
+                const centerA = worldToAtlas(portalCenter);
+                ctx.lineWidth   = portalPointWidth;
+                ctx.strokeStyle = portal.color.string();
+                ctx.fillStyle   = isSelected ? 'white'
+                                : isLinked   ? portal.color.mix(Color("white"), 0.8).string()
+                                :              portal.color.string();
+                ctx.beginPath();
+                ctx.arc(
+                    Math.floor(centerA.x), Math.floor(centerA.z),
+                    portalPointRadius, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.fill();
             }
 
             /* Draw a cross-hair at the center of atlas. */
@@ -294,4 +387,11 @@ export class AtlasView<D extends Dimension> {
             ctx.stroke();
         }
     }
+}
+
+interface PortalDetails<D extends Dimension> {
+    readonly portal: Portal<D>;
+    readonly portalCenter: Point;
+    readonly isSelected: boolean;
+    readonly isLinked: boolean;
 }
