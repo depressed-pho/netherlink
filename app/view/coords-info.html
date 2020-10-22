@@ -29,11 +29,17 @@
         <template data-selected="true" data-linked="true">
           This portal is linked up with
           <a data-for="name"></a>
-          in the <span data-for="dimension"></span>
-          located at <span data-for="location"></span>.
-          <template data-for="one-way">
+          in the <span data-for="dimension"></span>.
+          <template data-for="bidirectional">
+            The linkage is bidirectional.
+          </template>
+          <template data-for="one-way" data-reason="outside">
             But since it's outside of the search range of <span
-            data-for="name"></span>, this portal is always one-way.
+            data-for="name"></span>, this portal is one-way.
+          </template>
+          <template data-for="one-way" data-reason="suboptimal">
+            But since <a data-for="name"></a> is closer to its nominal
+            destination, this portal is one-way.
           </template>
         </template>
 
@@ -42,7 +48,7 @@
           game will create a new portal somewhere around
           <a data-for="location"></a>
           in the <span data-for="dimension"></span>
-          since there are no portals nearby.
+          since there are no portals in the search range.
         </template>
 
         <template data-selected="false" data-linked="true">
@@ -50,10 +56,21 @@
           <a data-for="name"></a>
           in the <span data-for="dimension"></span>
           located at <span data-for="location"></span>.
-          <template data-for="one-way">
+          <template data-for="bidirectional">
+            The linkage will be bidirectional.
+          </template>
+          <template data-for="one-way" data-reason="outside">
             But since it's outside of the search range of <span
-            data-for="name"></span>, the portal will always be
-            one-way.
+            data-for="name"></span>, the portal will be one-way.
+          </template>
+          <template data-for="one-way" data-reason="suboptimal">
+            But since <a data-for="name"></a> is closer to its nominal
+            destination, the portal will be one-way.
+          </template>
+          <template data-for="override">
+            Since it's closer to the nominal destination of <span
+            data-for="name"></span>, its current linkage with <a
+            data-for="old-name"></a> will be overridden.
           </template>
         </template>
 
@@ -62,7 +79,7 @@
           portal somewhere around
           <a data-for="location"></a>
           in the <span data-for="dimension"></span>
-          since there are no portals nearby.
+          since there are no portals in the search range.
         </template>
       </div>
     </div>

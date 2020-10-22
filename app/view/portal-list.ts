@@ -166,10 +166,19 @@ export class PortalListView<D extends Dimension> {
             });
 
             // State
-            const colState = row.querySelector("tr > td.nl-state")! as HTMLTableDataCellElement;
-            const tmplState = (portal.linkedPortal(w) ?
-                colState.querySelector("template[data-for='linked']")! :
-                colState.querySelector("template[data-for='unlinked']")!) as HTMLTemplateElement;
+            const colState  = row.querySelector("tr > td.nl-state")! as HTMLTableDataCellElement;
+            const linked    = portal.linkedPortal(w);
+            const tmplState = (() => {
+                if (linked) {
+                    const tmpl = colState.querySelector("template[data-for='linked']")! as HTMLTemplateElement;
+                    tmpl.content.querySelector("i")!.title =
+                        `This portal is linked with ${linked.name}.`;
+                    return tmpl;
+                }
+                else {
+                    return colState.querySelector("template[data-for='unlinked']")! as HTMLTemplateElement;
+                }
+            })();
             while (colState.firstChild) {
                 colState.removeChild(colState.firstChild);
             }

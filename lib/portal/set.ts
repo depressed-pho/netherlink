@@ -30,6 +30,11 @@ export class PortalSet<D extends Dimension> implements Iterable<Portal<D>> {
         return this;
     }
 
+    public clear(): this {
+        this.map.clear();
+        return this;
+    }
+
     public find(loc: Point): Portal<D>|null {
         for (let p of this) {
             if (p.location.equals(loc)) {

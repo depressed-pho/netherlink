@@ -38,6 +38,22 @@ export class World {
 
     }
 
+    public clone(): World {
+        const that = new World(this.name, this.id);
+
+        that.portalsInOverworld.clear();
+        for (const p of this.portalsInOverworld) {
+            that.portalsInOverworld.add(p.clone());
+        }
+
+        that.portalsInNether.clear();
+        for (const p of this.portalsInNether) {
+            that.portalsInNether.add(p.clone());
+        }
+
+        return that;
+    }
+
     public portals<D extends Dimension>(dimension: D): PortalSet<D> {
         if (dimension instanceof Overworld) {
             /* Now we know D is Overworld but TypeScript doesn't allow

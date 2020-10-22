@@ -254,22 +254,25 @@ export class AtlasView<D extends Dimension> {
                 }
             }
 
-            /* If there is a selected portal on the opposite side,
-             * draw its search area in this dimension. */
+            /* Draw the search area for each portal on the opposite side. */
             function isAreaVisible(areaTopLeft: Point, areaBottomRight: Point): boolean {
                 // Return true if two areas overlap.
                 return areaTopLeft.x < bottomRight.x && areaBottomRight.x > topLeft.x
                     && areaTopLeft.z < bottomRight.z && areaBottomRight.z > topLeft.z;
             }
-            if (selectedThere) {
-                const [areaTopLeft, areaBottomRight] = selectedThere.searchArea();
+            for (const portal of world.portals(this.dimension.portalOpposite)) {
+                const [areaTopLeft, areaBottomRight] = portal.searchArea();
 
                 if (isAreaVisible(areaTopLeft, areaBottomRight)) {
                     const tlA = worldToAtlas(areaTopLeft);
                     const brA = worldToAtlas(areaBottomRight);
                     ctx.lineWidth   = 1;
-                    ctx.strokeStyle = selectedThere.color.fade(0.7).string();
-                    ctx.fillStyle   = selectedThere.color.fade(0.9).string();
+                    ctx.strokeStyle = selectedThere && portal.equals(selectedThere)
+                        ? portal.color.fade(0.6).string()
+                        : portal.color.fade(0.7).string();
+                    ctx.fillStyle   = selectedThere && portal.equals(selectedThere)
+                        ? portal.color.fade(0.8).string()
+                        : portal.color.fade(0.9).string();
                     ctx.fillRect(
                         Math.floor(tlA.x), Math.floor(tlA.z),
                         Math.floor(brA.x - tlA.x), Math.floor(brA.z - tlA.z));

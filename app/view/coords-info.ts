@@ -103,6 +103,7 @@ export class CoordsInfoView<D extends Dimension> {
 
                 const name = frag.querySelector("a[data-for='name']")! as HTMLAnchorElement;
                 name.textContent = linked.name;
+                name.title = `Located at ${linked.location}`;
                 name.style.setProperty("color", linked.color.toString());
                 name.addEventListener("click", ev => {
                     ev.preventDefault();
@@ -112,19 +113,41 @@ export class CoordsInfoView<D extends Dimension> {
                 const dim = frag.querySelector("span[data-for='dimension']")! as HTMLSpanElement;
                 dim.textContent = linked.dimension.toString();
 
-                const loc = frag.querySelector("span[data-for='location']")! as HTMLSpanElement;
-                loc.textContent = linked.location.toString();
-
                 this.divInfo.appendChild(frag);
 
                 if (!pt.within(linked.searchArea())) {
-                    const oneWay = this.divInfo.querySelector("template[data-for='one-way']")! as HTMLTemplateElement;
+                    // But the portal is not within the search range
+                    // of the destination.
+                    const oneWay = this.divInfo.querySelector("template[data-for='one-way'][data-reason='outside']")! as HTMLTemplateElement;
 
                     const name = oneWay.content.querySelector("span[data-for='name']")! as HTMLSpanElement;
                     name.textContent = linked.name;
                     name.style.setProperty("color", linked.color.toString());
 
                     this.divInfo.appendChild(oneWay.content);
+                }
+                else {
+                    const reflected = linked.linkedPortal(w)!;
+                    if (reflected.equals(sel)) {
+                        // It's actually bidirectional.
+                        const bidi = this.divInfo.querySelector("template[data-for='bidirectional']")! as HTMLTemplateElement;
+                        this.divInfo.appendChild(bidi.content);
+                    }
+                    else {
+                        // There's a closer one than this.
+                        const oneWay = this.divInfo.querySelector("template[data-for='one-way'][data-reason='suboptimal']")! as HTMLTemplateElement;
+
+                        const name = oneWay.content.querySelector("a[data-for='name']")! as HTMLAnchorElement;
+                        name.textContent = reflected.name;
+                        name.title = `Located at ${reflected.location}`;
+                        name.style.setProperty("color", reflected.color.toString());
+                        name.addEventListener("click", ev => {
+                            ev.preventDefault();
+                            this.onPortalLinkClicked(reflected);
+                        });
+
+                        this.divInfo.appendChild(oneWay.content);
+                    }
                 }
             }
             else {
@@ -173,13 +196,64 @@ export class CoordsInfoView<D extends Dimension> {
                 this.divInfo.appendChild(frag);
 
                 if (!pt.within(linked.searchArea())) {
-                    const oneWay = this.divInfo.querySelector("template[data-for='one-way']")! as HTMLTemplateElement;
+                    // But it's not within the search range of the
+                    // destination.
+                    const oneWay = this.divInfo.querySelector("template[data-for='one-way'][data-reason='outside']")! as HTMLTemplateElement;
 
                     const name = oneWay.content.querySelector("span[data-for='name']")! as HTMLSpanElement;
                     name.textContent = linked.name;
                     name.style.setProperty("color", linked.color.toString());
 
                     this.divInfo.appendChild(oneWay.content);
+                }
+                else {
+                    const worldWithV = w.clone();
+                    worldWithV.portals(virtualPortal.dimension).add(virtualPortal);
+
+                    const reflected = linked.linkedPortal(worldWithV)!;
+                    if (reflected.equals(virtualPortal)) {
+                        // It will actually be bidirectional.
+                        const oldLink = linked.linkedPortal(w);
+                        if (oldLink) {
+                            // But there was a suboptimal linkage before.
+                            const override = this.divInfo.querySelector("template[data-for='override']")! as HTMLTemplateElement;
+
+                            const name = override.content.querySelector("span[data-for='name']")! as HTMLSpanElement;
+                            name.textContent = linked.name;
+                            name.style.setProperty("color", linked.color.toString());
+
+                            const oldName = override.content.querySelector("a[data-for='old-name']")! as HTMLAnchorElement;
+                            oldName.textContent = oldLink.name;
+                            oldName.title = `Located at ${oldLink.location}`;
+                            oldName.style.setProperty("color", oldLink.color.toString());
+                            oldName.addEventListener("click", ev => {
+                                ev.preventDefault();
+                                this.onPortalLinkClicked(oldLink);
+                            });
+
+                            this.divInfo.appendChild(override.content);
+                        }
+                        else {
+                            // There wasn't a linkage before.
+                            const bidi = this.divInfo.querySelector("template[data-for='bidirectional']")! as HTMLTemplateElement;
+                            this.divInfo.appendChild(bidi.content);
+                        }
+                    }
+                    else {
+                        // There's a closer one than this.
+                        const oneWay = this.divInfo.querySelector("template[data-for='one-way'][data-reason='suboptimal']")! as HTMLTemplateElement;
+
+                        const name = oneWay.content.querySelector("a[data-for='name']")! as HTMLAnchorElement;
+                        name.textContent = reflected.name;
+                        name.title = `Located at ${reflected.location}`;
+                        name.style.setProperty("color", reflected.color.toString());
+                        name.addEventListener("click", ev => {
+                            ev.preventDefault();
+                            this.onPortalLinkClicked(reflected);
+                        });
+
+                        this.divInfo.appendChild(oneWay.content);
+                    }
                 }
             }
             else {

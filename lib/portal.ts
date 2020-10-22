@@ -19,6 +19,10 @@ export class Portal<D extends Dimension> {
         this.color     = color;
     }
 
+    public clone(): Portal<D> {
+        return new Portal<D>(this.dimension, this.location, this.name, this.color);
+    }
+
     public linkedPortal<D1 extends Dimension>(w: World): Portal<D1>|null {
         /* First, calculate the coords of the nominal destination. X
          * and Z are multiplied or divided by 8, and Y remains

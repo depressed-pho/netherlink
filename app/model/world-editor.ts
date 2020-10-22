@@ -91,38 +91,6 @@ export class WorldEditorModel {
                 throttledCoordsNT,
                 this.world.sampledBy(throttledCoordsNT) as any)
                 .map(([pt, w]: any) => w.portals(nether).find(pt)));
-
-        /* And this too is a tricky part. Whenever a portal is
-         * selected, and has a linked portal in the opposite
-         * dimension, the linked one will be selected too (and thus
-         * changes the coords in the other dimension).
-         */
-        this.selectedPortalInOverworldBus.plug(
-            Bacon.combineAsArray(
-                this.selectedPortalInNether,
-                this.world.sampledBy(this.selectedPortalInNether) as any)
-                .flatMap(([p, w]: any) => {
-                    if (p) {
-                        const p2: Portal<Overworld>|null = p.linkedPortal(w);
-                        return p2 ? Bacon.once(p2) : Bacon.never() as any;
-                    }
-                    else {
-                        return Bacon.never();
-                    }
-                }));
-        this.selectedPortalInNetherBus.plug(
-            Bacon.combineAsArray(
-                this.selectedPortalInOverworld,
-                this.world.sampledBy(this.selectedPortalInOverworld) as any)
-                .flatMap(([p, w]: any) => {
-                    if (p) {
-                        const p2: Portal<Nether>|null = p.linkedPortal(w);
-                        return p2 ? Bacon.once(p2) : Bacon.never() as any;
-                    }
-                    else {
-                        return Bacon.never();
-                    }
-                }));
     }
 
     /* Events indicating portal lists need to be refreshed. */
