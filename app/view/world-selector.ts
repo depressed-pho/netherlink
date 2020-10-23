@@ -23,6 +23,7 @@ export class WorldSelectorView {
         this.selWorld = document.getElementById("selWorld")! as HTMLSelectElement;
         Bacon.combineAsArray(model.worlds, model.activeWorld as any)
             .onValue(([set, active]: any) => this.refreshList(set, active));
+        this.selWorld.addEventListener("input", ev => this.onSelectWorld());
 
         /* The "New..." button is always enabled and will open a modal
          * window when clicked. */
@@ -67,6 +68,10 @@ export class WorldSelectorView {
                 this.selWorld.selectedIndex = this.selWorld.options.length - 1;
             }
         }
+    }
+
+    private onSelectWorld() {
+        console.log("onSelectWorld");
     }
 
     private async onNewWorld() {
