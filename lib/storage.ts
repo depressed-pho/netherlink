@@ -10,12 +10,17 @@ export interface NLStorage extends Iterable<World> {
     /** Storages aren't always available. For example, the local
      * storage might be disabled by a browser config. For this reason,
      * they may actually be non-working, but they have to indicate
-     * that through this property. */
+     * that through this property.
+     *
+     * If the storage is unavailable, any attempts to write to it will
+     * be silently ignored. But if it's available but its quota is
+     * being exceeded, they will throw an error.
+     */
     readonly isAvailable: boolean;
 
     /** We hate it when our storage contains absolutely no world
      * files. There always has to be one world that is selected. Note
-     * that setting this property will also stores the world.
+     * that setting this property will also store the world.
      */
     activeWorld: World;
 

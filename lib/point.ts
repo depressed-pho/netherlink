@@ -1,4 +1,3 @@
-import { Message } from 'protobufjs/minimal';
 import pbRoot from './world.proto';
 
 export class Point {
@@ -46,9 +45,16 @@ export class Point {
             Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2) + Math.pow(p2.z - p1.z, 2));
     }
 
-    public static toMessage(p: Point): Message<Point> {
-        const MsgPoint = pbRoot.netherlink.Point;
-        return MsgPoint.create(p);
+    public static toMessage(p: Point): any {
+        return pbRoot.netherlink.Point.create({
+            x: p.x,
+            y: p.y,
+            z: p.z
+        });
+    }
+
+    public static fromMessage(m: any): Point {
+        return new Point(m.x, m.y, m.z);
     }
 }
 

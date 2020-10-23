@@ -1,19 +1,20 @@
+import * as uuid from 'uuid';
+import Color = require('color');
+import pbRoot from './world.proto';
 import { Dimension, Overworld, Nether, overworld, nether } from 'netherlink/dimension';
 import { Portal } from 'netherlink/portal';
 import { PortalSet } from 'netherlink/portal/set';
-import * as uuid from 'uuid';
-import Color = require('color');
 
 // FIXME: remove these
-import { Point } from 'netherlink/point';
+//import { Point } from 'netherlink/point';
 
 export type WorldID = string; // UUID v1
 
 export class World {
     public readonly id: WorldID;
     public name: string;
-    private readonly portalsInOverworld: PortalSet<Overworld>;
-    private readonly portalsInNether: PortalSet<Nether>;
+    private portalsInOverworld: PortalSet<Overworld>;
+    private portalsInNether: PortalSet<Nether>;
 
     public constructor(name: string, id?: WorldID) {
         this.id   = id ? id : uuid.v1();
@@ -22,6 +23,7 @@ export class World {
         this.portalsInNether    = new PortalSet<Nether>();
 
         // FIXME: remove this
+        /*
         this.portalsInOverworld.add(
             new Portal<Overworld>(
                 overworld,
@@ -35,21 +37,14 @@ export class World {
                 new Point(10, 10, 10),
                 "Portal #2",
                 Color.rgb(0, 100, 100)));
-
+        */
     }
 
     public clone(): World {
         const that = new World(this.name, this.id);
 
-        that.portalsInOverworld.clear();
-        for (const p of this.portalsInOverworld) {
-            that.portalsInOverworld.add(p.clone());
-        }
-
-        that.portalsInNether.clear();
-        for (const p of this.portalsInNether) {
-            that.portalsInNether.add(p.clone());
-        }
+        that.portalsInOverworld = this.portalsInOverworld.clone();
+        that.portalsInNether    = this.portalsInNether.clone();
 
         return that;
     }
@@ -134,5 +129,37 @@ export class World {
         else if (a1[3] > a2[3]) { return  1 }
 
         return 0;
+    }
+
+    public static toMessage(w: World): any {
+        return pbRoot.netherlink.World.create({
+            id:         uuid.parse(w.id),
+            name:       w.name,
+            dimensions: {
+                [Dimension.toMessage(overworld)]: PortalSet.toMessage(w.portalsInOverworld),
+                [Dimension.toMessage(nether   )]: PortalSet.toMessage(w.portalsInNether)
+            }
+        });
+    }
+
+    public static fromMessage(m: any): World {
+        const w = new World(m.name, uuid.stringify(m.id));
+
+        for (const md in m.dimensions) {
+            const d = Dimension.fromMessage(Number(md));
+            const s = PortalSet.fromMessage(m.dimensions[md]);
+
+            if (d instanceof Overworld) {
+                w.portalsInOverworld = s;
+            }
+            else if (d instanceof Nether) {
+                w.portalsInNether = s;
+            }
+            else {
+                throw new Error(`Unsupported dimension: ${d}`);
+            }
+        }
+
+        return w;
     }
 }

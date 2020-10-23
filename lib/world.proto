@@ -1,10 +1,19 @@
 package netherlink;
 syntax = "proto3";
 
+message Worlds {
+  repeated World worlds = 1;
+}
+
 message World {
-  string id = 1;
+  bytes id = 1;
   string name = 2;
-  map<string, PortalSet> dimensions = 3; // Either "overworld" or "nether"
+  map<int32, PortalSet> dimensions = 3; // The key is actually a Dimension.
+}
+
+enum Dimension {
+  OVERWORLD = 0;
+  NETHER = 1;
 }
 
 message PortalSet {
@@ -12,9 +21,10 @@ message PortalSet {
 }
 
 message Portal {
-  Point location = 1;
-  string Name = 2;
-  Color color = 3;
+  Dimension dimension = 1;
+  Point location = 2;
+  string name = 3;
+  Color color = 4;
 }
 
 message Point {

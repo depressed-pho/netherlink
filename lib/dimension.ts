@@ -1,3 +1,4 @@
+import pbRoot from './world.proto';
 import { Chunk } from 'netherlink/chunk';
 import { Point } from 'netherlink/point';
 
@@ -46,6 +47,33 @@ export class Dimension {
      */
     public portalSearchArea(nominal: Point): [Point, Point] {
         throw new Error("Not implemented");
+    }
+
+    public static toMessage(d: Dimension): number {
+        /* This is very suboptimal, but what else can we do? */
+        if (d instanceof Overworld) {
+            return pbRoot.netherlink.Dimension.OVERWORLD;
+        }
+        else if (d instanceof Nether) {
+            return pbRoot.netherlink.Dimension.NETHER;
+        }
+        else {
+            throw new Error(`Unsupported dimension: ${d}`);
+        }
+    }
+
+    public static fromMessage<D extends Dimension>(m: number): D {
+        /* Again, this is fucking suboptimal. */
+        switch (m) {
+            case pbRoot.netherlink.Dimension.OVERWORLD:
+                return overworld as any;
+
+            case pbRoot.netherlink.Dimension.NETHER:
+                return nether as any;
+
+            default:
+                throw new Error(`Unknown dimension: ${m}`);
+        }
     }
 };
 

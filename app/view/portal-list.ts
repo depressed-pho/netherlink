@@ -103,7 +103,7 @@ export class PortalListView<D extends Dimension> {
                 throw e;
             }
         }
-        this.model.addPortal(p);
+        this.model.addPortal(p); // FIXME: Catch quota errors
     }
 
     private async onEditPortal(p: Portal<D>) {
@@ -119,7 +119,7 @@ export class PortalListView<D extends Dimension> {
                 throw e;
             }
         }
-        this.model.addPortal(np);
+        this.model.addPortal(np); // FIXME: Catch quota errors
     }
 
     private async onDeletePortal(p: Portal<D>) {

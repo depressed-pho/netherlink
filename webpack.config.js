@@ -109,6 +109,12 @@ module.exports = (env, argv) => {
                              * mode. There's a PR but it hasn't been
                              * merged for years:
                              * https://github.com/kmontag/protobufjs-loader/pull/2
+                             *
+                             * But the real problem is that pbts
+                             * generates .d.ts rather than the real
+                             * script, which means we still need .js
+                             * too. Loaders can't handle this
+                             * situation well.
                              */,
                             options: {
                                 pbjsArgs: ['--wrap', 'es6']

@@ -1,7 +1,8 @@
+import Color = require('color');
 import { Dimension } from 'netherlink/dimension';
 import { Point } from 'netherlink/point';
 import { World } from 'netherlink/world';
-import Color = require('color');
+import pbRoot from './world.proto';
 
 export class Portal<D extends Dimension> {
     public readonly dimension: D;
@@ -88,5 +89,33 @@ export class Portal<D extends Dimension> {
             :  p1.location.z < p2.location.z ? -1
             :  p1.location.z > p2.location.z ?  1
             :  0;
+    }
+
+    public static toMessage<D extends Dimension>(p: Portal<D>): any {
+        return pbRoot.netherlink.Portal.create({
+            dimension: Dimension.toMessage(p.dimension),
+            location:  Point.toMessage(p.location),
+            name:      p.name,
+            color:     (() => {
+                const rgb = p.color.rgb();
+                return pbRoot.netherlink.Color.create({
+                    r: rgb.red(),
+                    g: rgb.green(),
+                    b: rgb.blue()
+                })
+            })()
+        });
+    }
+
+    public static fromMessage<D extends Dimension>(m: any): Portal<D> {
+        return new Portal<D>(
+            Dimension.fromMessage(m.dimension),
+            Point.fromMessage(m.location),
+            m.name,
+            new Color({
+                r: m.color.r,
+                g: m.color.g,
+                b: m.color.b
+            }));
     }
 }
