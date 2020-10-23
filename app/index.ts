@@ -5,6 +5,7 @@ import { WorldSelectorModel } from './model/world-selector';
 import { overworld, nether } from 'netherlink/dimension';
 import { NLStorage } from 'netherlink/storage';
 import * as LocalStorage from 'netherlink/storage/local';
+import * as Alert from './view/alert';
 import { WorldSelectorView } from './view/world-selector';
 import { PortalListView } from './view/portal-list';
 import { AtlasView } from './view/atlas';
@@ -14,6 +15,14 @@ $(document).foundation();
 
 window.addEventListener('DOMContentLoaded', (ev) => {
     const storage: NLStorage = LocalStorage.instance;
+
+    if (!storage.isAvailable) {
+        Alert.show(
+            "warning", "Cannot save changes",
+            "Your browser doesn't seem to allow web applications to save their " +
+                "data in its local storage, possibly because it's in a private mode. " +
+                "Any changes you make will be lost.");
+    }
 
     const worldSelM = new WorldSelectorModel(storage);
     const worldSelV = new WorldSelectorView(worldSelM);

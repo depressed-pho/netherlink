@@ -1,0 +1,12 @@
+.nl-alert-parent {
+    position: relative;
+
+    .nl-alert-container {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        width: 30vw;
+
+        opacity: 95%;
+    }
+}

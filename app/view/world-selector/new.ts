@@ -1,6 +1,7 @@
 import 'foundation-sites';
 import $ = require('jquery');
 import htmlNew from './new.html';
+import * as Alert from '../alert';
 import { WorldSelectorModel } from '../../model/world-selector';
 
 export class ModalNewWorldView {
@@ -56,11 +57,24 @@ export class ModalNewWorldView {
     }
 
     private onSubmit(): void {
-        const name  = this.fldName.value;
-        const world = this.model.newWorld(name);
+        const name = this.fldName.value;
 
-        this.model.activateWorld(world);
+        let couldSave = false;
+        try {
+            const world = this.model.newWorld(name);
+            this.model.activateWorld(world);
+            couldSave = true;
+        }
+        catch (e) {
+            Alert.show(
+                "alert", "Cannot save changes",
+                `Failed to save the new world: ${e}`);
+        }
+
         this.close();
-        this.fldName.value = "";
+
+        if (couldSave) {
+            this.fldName.value = "";
+        }
     }
 }

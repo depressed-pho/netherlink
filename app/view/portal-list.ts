@@ -6,6 +6,7 @@ import { Point } from 'netherlink/point';
 import { Portal } from 'netherlink/portal';
 import { World } from 'netherlink/world';
 import { WorldEditorModel } from '../model/world-editor';
+import * as Alert from './alert';
 import * as ModalEditPortal from './portal-list/edit';
 import * as ModalNewPortal from './portal-list/new';
 import htmlPortalList from './portal-list.html';
@@ -103,7 +104,15 @@ export class PortalListView<D extends Dimension> {
                 throw e;
             }
         }
-        this.model.addPortal(p); // FIXME: Catch quota errors
+
+        try {
+            this.model.addPortal(p);
+        }
+        catch (e) {
+            Alert.show(
+                "alert", "Cannot save changes",
+                `Failed to save changes to the world: ${e}`);
+        }
     }
 
     private async onEditPortal(p: Portal<D>) {
@@ -119,7 +128,15 @@ export class PortalListView<D extends Dimension> {
                 throw e;
             }
         }
-        this.model.addPortal(np); // FIXME: Catch quota errors
+
+        try {
+            this.model.addPortal(np);
+        }
+        catch (e) {
+            Alert.show(
+                "alert", "Cannot save changes",
+                `Failed to save changes to the world: ${e}`);
+        }
     }
 
     private async onDeletePortal(p: Portal<D>) {
@@ -135,7 +152,14 @@ export class PortalListView<D extends Dimension> {
         }
         catch (e) {
             if (e === undefined) {
-                this.model.deletePortal(p);
+                try {
+                    this.model.deletePortal(p);
+                }
+                catch (e) {
+                    Alert.show(
+                        "alert", "Cannot save changes",
+                        `Failed to save changes to the world: ${e}`);
+                }
             }
             else {
                 throw e;
