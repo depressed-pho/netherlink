@@ -1,8 +1,10 @@
 import * as Bacon from 'baconjs';
 import { confirm } from './confirm';
 import { World, WorldID } from 'netherlink/world';
+import * as Alert from './alert';
 import { WorldSelectorModel } from '../model/world-selector';
-import { ModalNewWorldView } from './world-selector/new';
+import * as ModalNewWorld from './world-selector/new';
+import * as ModalRenameWorld from './world-selector/rename';
 
 export class WorldSelectorView {
     private readonly model: WorldSelectorModel;
@@ -12,8 +14,6 @@ export class WorldSelectorView {
     private readonly btnNew: HTMLButtonElement;
     private readonly btnDelete: HTMLButtonElement;
     private readonly btnRename: HTMLButtonElement;
-
-    private readonly modalNew: ModalNewWorldView;
 
     public constructor(model: WorldSelectorModel) {
         this.model = model;
@@ -26,9 +26,8 @@ export class WorldSelectorView {
 
         /* The "New..." button is always enabled and will open a modal
          * window when clicked. */
-        this.btnNew   = document.getElementById("btnNewWorld")! as HTMLButtonElement;
-        this.modalNew = new ModalNewWorldView(model);
-        this.btnNew.addEventListener("click", ev => this.modalNew.open());
+        this.btnNew = document.getElementById("btnNewWorld")! as HTMLButtonElement;
+        this.btnNew.addEventListener("click", ev => this.onNewWorld());
 
         /* The "Delete..." button is enabled when there are more than
          * one world, and will open a modal window when clicked. */
@@ -41,7 +40,11 @@ export class WorldSelectorView {
         /* The "Rename..." button is always enabled and will open a
          * modal window when clicked. */
         this.btnRename = document.getElementById("btnRenameWorld")! as HTMLButtonElement;
-        // FIXME: Handle it.
+        const renameClicked = Bacon.fromEvent(this.btnRename, 'click');
+        this.model.activeWorld.sampledBy(renameClicked).onValue(w => this.onRenameWorld(w));
+
+        // FIXME: Export
+        // FIXME: Import
     }
 
     private refreshList(set: Set<World>, active: World): void {
@@ -66,6 +69,31 @@ export class WorldSelectorView {
         }
     }
 
+    private async onNewWorld() {
+        let w: World;
+        try {
+            w = await ModalNewWorld.prompt(this.model.newWorldNameCandidate);
+        }
+        catch (e) {
+            if (e === undefined) {
+                return; // Canceled
+            }
+            else {
+                throw e;
+            }
+        }
+
+        try {
+            this.model.newWorld(w);
+            this.model.activateWorld(w);
+        }
+        catch (e) {
+            Alert.show(
+                "alert", "Cannot save changes",
+                `Failed to save the new world: ${e}`);
+        }
+    }
+
     private async onDeleteWorld() {
         const active = this.selWorld.options.item(this.selWorld.selectedIndex)!;
         try {
@@ -86,12 +114,43 @@ export class WorldSelectorView {
                     : this.selWorld.selectedIndex - 1;
                 const next = this.selWorld.options.item(nextIndex)!;
 
-                this.model.activateWorld(next.value);
-                this.model.deleteWorld(active.value);
+                try {
+                    this.model.activateWorld(next.value);
+                    this.model.deleteWorld(active.value);
+                }
+                catch (e) {
+                    Alert.show(
+                        "alert", "Cannot save changes",
+                        `Failed to delete the world: ${e}`);
+                }
             }
             else {
                 throw e;
             }
+        }
+    }
+
+    private async onRenameWorld(w: World) {
+        let nw: World;
+        try {
+            nw = await ModalRenameWorld.prompt(w);
+        }
+        catch (e) {
+            if (e === undefined) {
+                return; // Canceled
+            }
+            else {
+                throw e;
+            }
+        }
+
+        try {
+            this.model.storeWorld(nw);
+        }
+        catch (e) {
+            Alert.show(
+                "alert", "Cannot save changes",
+                `Failed to save the new world: ${e}`);
         }
     }
 }

@@ -83,7 +83,7 @@ class ModalNewPortalView<D extends Dimension> {
         this.fldName.focus();
     }
 
-    public close(reject = true): void {
+    public close(): void {
         $(this.modalNew).foundation("close");
     }
 

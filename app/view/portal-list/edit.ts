@@ -63,7 +63,7 @@ class ModalEditPortalView<D extends Dimension> {
         this.fldName.focus();
     }
 
-    public close(reject = true): void {
+    public close(): void {
         $(this.modalEdit).foundation("close");
     }
 
@@ -74,8 +74,6 @@ class ModalEditPortalView<D extends Dimension> {
 
         this.close();
         this.resolve(portal);
-        this.fldName.value = "";
-        this.fldColor.value = "#000000";
     }
 }
 

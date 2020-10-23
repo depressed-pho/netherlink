@@ -40,13 +40,9 @@ export class WorldSelectorModel {
         return this.storage.newWorldNameCandidate;
     }
 
-    public newWorld(name: string): World {
-        const w = new World(name);
-
+    public newWorld(w: World): void {
         this.storage.storeWorld(w);
         this.worldsBus.push(new Set<World>(this.storage));
-
-        return w;
     }
 
     public activateWorld(id: WorldID): void;
@@ -73,6 +69,11 @@ export class WorldSelectorModel {
         mod(w);
         this.storage.storeWorld(w);
         this.activeWorldBus.push(w);
+    }
+
+    public storeWorld(w: World): void {
+        this.storage.storeWorld(w);
+        this.worldsBus.push(new Set<World>(this.storage));
     }
 
     public deleteWorld(id: WorldID): void {
