@@ -6,7 +6,8 @@ const common = require('./webpack.common.js');
 module.exports = merge(common, {
     mode: 'production',
     devtool: 'source-map',
-        optimization: {
+    optimization: {
+        usedExports: true, // See https://webpack.js.org/guides/tree-shaking/
         minimizer: [
             new OptimizeCSSAssetsPlugin(),
             new TerserWebpackPlugin({
