@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "description": "Web app to manage nether portals in Minecraft",
   "scripts": {
-    "build": "webpack --mode=production --progress",
+    "build": "webpack --progress --config webpack.prod.js",
     "clean": "rimraf dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "run-s build deploy:gh-pages",
     "deploy:gh-pages": "gh-pages -d dist",
-    "start": "webpack-dev-server --mode=development --content-base dist"
+    "start": "webpack-dev-server --config webpack.dev.js --content-base dist"
   },
   "keywords": [
     "Minecraft",
@@ -55,6 +55,7 @@
     "typescript": "^3.9.7",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^3.11.0",
+    "webpack-merge": "^5.2.0"
   }
 }
