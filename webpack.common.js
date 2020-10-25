@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const WebpackPwaManifest = require('webpack-pwa-manifest');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = {
@@ -31,6 +32,7 @@ module.exports = {
                 keepClosingSlash: true,
                 removeComments: true
             },
+            favicon: 'assets/favicon.png',
             template: 'assets/index.html',
             xhtml: true
         }),
@@ -41,6 +43,26 @@ module.exports = {
             /* For Foundation */
             $: 'jquery',
             jQuery: 'jquery'
+        }),
+        new WebpackPwaManifest({
+            name: 'Netherlink',
+            description: 'Tool for planning nether portal setups in Minecraft',
+            orientation: 'omit',
+            display: 'standalone',
+            fingerprints: false,
+            ios: true,
+            icons: [
+                {
+                    src: path.resolve('./assets/netherlink-large.png'),
+                    size: '512x512',
+                    destination: 'assets'
+                },
+                {
+                    src: path.resolve('./assets/netherlink-small.png'),
+                    size: '256x256',
+                    destination: 'assets'
+                }
+            ]
         }),
         new WorkboxPlugin.GenerateSW({
             cacheId: 'netherlink',

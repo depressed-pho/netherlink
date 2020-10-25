@@ -1,7 +1,7 @@
 {
   "name": "netherlink",
   "version": "1.0.0",
-  "description": "Web app to manage nether portals in Minecraft",
+  "description": "Web app to plan nether portal setups in Minecraft",
   "scripts": {
     "build": "webpack --progress --config webpack.prod.js",
     "clean": "rimraf dist",
@@ -57,6 +57,7 @@
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0",
     "webpack-merge": "^5.2.0",
+    "webpack-pwa-manifest": "^4.2.0",
     "workbox-webpack-plugin": "^5.1.4"
   }
 }
