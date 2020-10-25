@@ -1,4 +1,4 @@
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
@@ -9,7 +9,9 @@ module.exports = merge(common, {
     optimization: {
         usedExports: true, // See https://webpack.js.org/guides/tree-shaking/
         minimizer: [
-            new OptimizeCSSAssetsPlugin(),
+            new CssMinimizerPlugin({
+                sourceMap: true
+            }),
             new TerserWebpackPlugin({
                 sourceMap: true,
                 terserOptions: {

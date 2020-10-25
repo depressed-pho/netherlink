@@ -60,7 +60,7 @@ module.exports = {
                         loader: 'file-loader',
                         options: {
                             limit: 10000,
-                            name: "assets/[hash].[ext]"
+                            name: "assets/[name].[ext]"
                         }
                     }
                 ]
