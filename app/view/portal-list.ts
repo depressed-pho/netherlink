@@ -1,3 +1,4 @@
+import $ = require('jquery');
 import * as Bacon from 'baconjs';
 import { confirm } from './confirm';
 import { Dimension, Overworld, Nether } from 'netherlink/dimension';
@@ -220,6 +221,11 @@ export class PortalListView<D extends Dimension> {
             colName.textContent = portal.name;
 
             this.tbody.appendChild(row);
+
+            /* Scroll the tbody so that a selected row is visible. */
+            if (selected && portal.equals(selected)) {
+                tr.scrollIntoView({behavior: 'smooth'});
+            }
         }
     }
 
@@ -228,7 +234,9 @@ export class PortalListView<D extends Dimension> {
         for (const tr of this.tbody.querySelectorAll("tr")) {
             if (tr.dataset.coords == coords) {
                 tr.classList.add("nl-selected");
-                // FIXME: Scroll
+
+                /* Scroll the tbody so that this row is visible. */
+                tr.scrollIntoView({behavior: 'smooth'});
             }
             else {
                 tr.classList.remove("nl-selected");

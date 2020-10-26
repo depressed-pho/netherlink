@@ -1,0 +1,5 @@
+/* We sometimes need this to prevent cells in a vertical grid to grow
+   depending on their contents. */
+.nl-height-100 {
+    height: 100%;
+}

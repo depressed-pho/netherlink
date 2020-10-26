@@ -1,7 +1,7 @@
 import * as base64 from 'js-base64';
 import * as pako from 'pako';
 import pbRoot from '../world.proto';
-import { Dimension } from 'netherlink/dimension';
+import { Dimension, overworld, nether } from 'netherlink/dimension';
 import { NLStorage } from 'netherlink/storage';
 import { World, WorldID } from 'netherlink/world';
 
@@ -10,12 +10,14 @@ import { World, WorldID } from 'netherlink/world';
  * store data with the following keys:
  *
  * - "netherlink/worlds": Base64-encoded gzip-compressed Worlds
+ * - "netherlink/activeWorld": Textual WorldID
+ * - "netherlink/${dimension}/atlas/scale": number
  */
 export class LocalStorage implements NLStorage {
     private backend?: Storage;
     private worlds: Map<WorldID, World>;
     private _activeWorld: WorldID;
-    private _atlasScale: Map<Dimension, number>;
+    private _atlasScales: Map<Dimension, number>;
 
     public constructor() {
         /* The local storage isn't always available. The browser may
@@ -28,8 +30,7 @@ export class LocalStorage implements NLStorage {
             console.log("Local storage is not available:", e);
         }
 
-        this.worlds = new Map<WorldID, World>();
-        this.loadWorlds();
+        this.worlds = this.loadWorlds();
 
         /* Storages must always be non-empty. */
         if (this.worlds.size == 0) {
@@ -39,12 +40,10 @@ export class LocalStorage implements NLStorage {
             this._activeWorld = w.id;
         }
         else {
-            // FIXME: Load this.
-            this._activeWorld = this.worlds.keys().next().value;
+            this._activeWorld = this.loadActiveWorld();
         }
 
-        // FIXME: load this.
-        this._atlasScale = new Map<Dimension, number>();
+        this._atlasScales = this.loadAtlasScales();
     }
 
     get isAvailable(): boolean {
@@ -58,6 +57,7 @@ export class LocalStorage implements NLStorage {
     set activeWorld(w: World) {
         this.storeWorld(w);
         this._activeWorld = w.id;
+        this.saveActiveWorld();
     }
 
     public [Symbol.iterator](): Iterator<World> {
@@ -111,11 +111,11 @@ export class LocalStorage implements NLStorage {
     public atlasScale<D extends Dimension>(dimension: D, scale: number): void;
     public atlasScale<D extends Dimension>(dimension: D, scale?: number): any {
         if (scale) {
-            this._atlasScale.set(dimension, scale);
-            // FIXME: save this.
+            this._atlasScales.set(dimension, scale);
+            this.saveAtlasScales();
         }
         else {
-            const s = this._atlasScale.get(dimension);
+            const s = this._atlasScales.get(dimension);
             return s ? s : 1.5;
         }
     }
@@ -143,8 +143,8 @@ export class LocalStorage implements NLStorage {
     /** We must not throw errors even if the storage is corrupted,
      * because then the app cannot even boot.
      */
-    private loadWorlds(): void {
-        this.worlds.clear();
+    private loadWorlds(): Map<WorldID, World> {
+        const ws = new Map<WorldID, World>();
 
         if (this.backend) {
             const b64 = this.backend.getItem("netherlink/worlds");
@@ -156,7 +156,7 @@ export class LocalStorage implements NLStorage {
 
                     for (const mw of worlds.worlds) {
                         const w = World.fromMessage(mw);
-                        this.worlds.set(w.id, w);
+                        ws.set(w.id, w);
                     }
                 }
                 catch (e) {
@@ -164,6 +164,63 @@ export class LocalStorage implements NLStorage {
                 }
             }
         }
+
+        return ws;
+    }
+
+    private saveActiveWorld(): void {
+        if (this.backend) {
+            try {
+                this.backend.setItem("netherlink/activeWorld", this._activeWorld);
+            }
+            catch (e) {
+                /* Failing to save it isn't a big deal. We just log it
+                 * without letting the exception thrown. */
+                console.error("Failed to save the active world ID:", e);
+            }
+        }
+    }
+    private loadActiveWorld(): WorldID {
+        if (this.backend) {
+            const id = this.backend.getItem("netherlink/activeWorld");
+            if (id && this.worlds.has(id)) {
+                return id;
+            }
+        }
+        /* If it wasn't saved, choose an arbitrary world. */
+        return this.worlds.keys().next().value;
+    }
+
+    private saveAtlasScales(): void {
+        if (this.backend) {
+            for (const [dimension, scale] of this._atlasScales) {
+                const ld = dimension.toString().toLowerCase();
+                try {
+                    this.backend.setItem(`netherlink/${ld}/atlas/scale`, String(scale));
+                }
+                catch (e) {
+                    /* Failing to save it isn't a big deal. We just
+                     * log it without letting the exception thrown. */
+                    console.error("Failed to save the atlas scale:", e);
+                }
+            }
+        }
+    }
+    private loadAtlasScales(): Map<Dimension, number> {
+        const scales = new Map<Dimension, number>();
+
+        if (this.backend) {
+            for (const dimension of [overworld, nether]) {
+                const ld    = dimension.toString().toLowerCase();
+                const scale = this.backend.getItem(`netherlink/${ld}/atlas/scale`);
+
+                if (scale) {
+                    scales.set(dimension, Number(scale));
+                }
+            }
+        }
+
+        return scales;
     }
 }
 

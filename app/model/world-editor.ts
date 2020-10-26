@@ -42,17 +42,17 @@ export class WorldEditorModel {
         this.selectedPortalInOverworldBus = new Bacon.Bus<Portal<Overworld>|null>();
         this.selectedPortalInOverworld    =
             this.selectedPortalInOverworldBus
-                .skipDuplicates((a, b) =>  a &&  b ? a.equals(b)
-                                        : !a && !b ? true
-                                        : false)
+                .skipDuplicates((a, b) => ( a &&  b) ? a.equals(b)
+                                        : (!a && !b) ? true
+                                        :              false)
                 .toProperty(null);
 
         this.selectedPortalInNetherBus = new Bacon.Bus<Portal<Nether>|null>();
         this.selectedPortalInNether    =
             this.selectedPortalInNetherBus
-                .skipDuplicates((a, b) =>  a &&  b ? a.equals(b)
-                                        : !a && !b ? true
-                                        : false)
+                .skipDuplicates((a, b) => ( a &&  b) ? a.equals(b)
+                                        : (!a && !b) ? true
+                                        :              false)
                 .toProperty(null);
 
         this.coordsInOverworldBus = new Bacon.Bus<Point>();
