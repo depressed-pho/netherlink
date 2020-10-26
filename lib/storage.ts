@@ -31,6 +31,9 @@ export interface NLStorage extends Iterable<World> {
      */
     newWorldNameCandidate: string;
 
+    /** Check if a given world ID is in the storage. */
+    hasWorld(id: WorldID): boolean;
+
     /** Load a world. If no corresponding worlds are stored, it will
      * raise an error.
      */

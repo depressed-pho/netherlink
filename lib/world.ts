@@ -5,9 +5,6 @@ import { Dimension, Overworld, Nether, overworld, nether } from 'netherlink/dime
 import { Portal } from 'netherlink/portal';
 import { PortalSet } from 'netherlink/portal/set';
 
-// FIXME: remove these
-//import { Point } from 'netherlink/point';
-
 export type WorldID = string; // UUID v1
 
 export class World {
@@ -21,23 +18,6 @@ export class World {
         this.name = name;
         this.portalsInOverworld = new PortalSet<Overworld>();
         this.portalsInNether    = new PortalSet<Nether>();
-
-        // FIXME: remove this
-        /*
-        this.portalsInOverworld.add(
-            new Portal<Overworld>(
-                overworld,
-                new Point(1, 1, 1),
-                "Portal #1",
-                Color.rgb(255, 0, 0)));
-
-        this.portalsInNether.add(
-            new Portal<Nether>(
-                nether,
-                new Point(10, 10, 10),
-                "Portal #2",
-                Color.rgb(0, 100, 100)));
-        */
     }
 
     public clone(): World {

@@ -1,6 +1,11 @@
 import * as Bacon from 'baconjs';
+import { saveAs } from 'file-saver';
+import * as pako from 'pako';
 import { confirm } from './confirm';
+import { chooseFile } from 'netherlink/choose-file';
+import { readFile } from 'netherlink/read-file';
 import { World, WorldID } from 'netherlink/world';
+import pbRoot from 'netherlink/world.proto';
 import * as Alert from './alert';
 import { WorldSelectorModel } from '../model/world-selector';
 import * as ModalNewWorld from './world-selector/new';
@@ -14,6 +19,8 @@ export class WorldSelectorView {
     private readonly btnNew: HTMLButtonElement;
     private readonly btnDelete: HTMLButtonElement;
     private readonly btnRename: HTMLButtonElement;
+    private readonly btnExport: HTMLButtonElement;
+    private readonly btnImport: HTMLButtonElement;
 
     public constructor(model: WorldSelectorModel) {
         this.model = model;
@@ -44,8 +51,16 @@ export class WorldSelectorView {
         const renameClicked = Bacon.fromEvent(this.btnRename, 'click');
         this.model.activeWorld.sampledBy(renameClicked).onValue(w => this.onRenameWorld(w));
 
-        // FIXME: Export
-        // FIXME: Import
+        /* The "Export..." button is always enabled and will open a
+         * "save file" window when clicked. */
+        this.btnExport = document.getElementById("btnExportWorld")! as HTMLButtonElement;
+        const exportClicked = Bacon.fromEvent(this.btnExport, 'click');
+        this.model.activeWorld.sampledBy(exportClicked).onValue(w => this.onExportWorld(w));
+
+        /* The "Import..." button is always enabled and will open a
+         * "open file" window when clicked. */
+        this.btnImport = document.getElementById("btnImportWorld")! as HTMLButtonElement;
+        this.btnImport.addEventListener("click", ev => this.onImportWorld());
     }
 
     private refreshList(set: Set<World>, active: World): void {
@@ -160,6 +175,61 @@ export class WorldSelectorView {
             Alert.show(
                 "alert", "Cannot save changes",
                 `Failed to save the new world: ${e}`);
+        }
+    }
+
+    private onExportWorld(world: World) {
+        const msg = World.toMessage(world);
+
+        const invalid = pbRoot.netherlink.World.verify(msg);
+        if (invalid) {
+            // Should not happen unless our code is broken.
+            throw new Error(invalid);
+        }
+
+        const raw     = pbRoot.netherlink.World.encode(msg).finish();
+        const gzipped = pako.gzip(raw);
+        const blob    = new Blob([gzipped], {type: "application/octet-stream"});
+
+        saveAs(blob, `${world.name}.nlinks`);
+    }
+
+    private async onImportWorld() {
+        try {
+            const file    = await chooseFile({accept: [".nlinks"]});
+            const gzipped = new Uint8Array(await readFile(file));
+            const raw     = pako.ungzip(gzipped);
+            const msg     = pbRoot.netherlink.World.decode(raw);
+            const world   = World.fromMessage(msg);
+
+            if (this.model.hasWorld(world.id)) {
+                try {
+                    await confirm(
+                        `The world to be imported as "${world.name}" already exists.` +
+                            " Do you want to replace it?",
+                        "Yes, replace it",
+                        "No, keep it");
+
+                    // User chose to keep it.
+                    return;
+                }
+                catch (e) {
+                    if (e === undefined) {
+                        // User chose to replace it.
+                    }
+                    else {
+                        throw e;
+                    }
+                }
+            }
+
+            this.model.newWorld(world);
+            this.model.activateWorld(world);
+        }
+        catch (e) {
+            Alert.show(
+                "alert", "Cannot import file",
+                `Failed to import the file: ${e}`);
         }
     }
 }

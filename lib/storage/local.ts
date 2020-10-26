@@ -83,6 +83,10 @@ export class LocalStorage implements NLStorage {
          * reaches here!? That's amazing! */
     }
 
+    hasWorld(id: WorldID): boolean {
+        return this.worlds.has(id);
+    }
+
     public loadWorld(id: WorldID): World {
         const w = this.worlds.get(id);
         if (w) {

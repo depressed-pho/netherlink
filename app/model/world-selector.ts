@@ -40,6 +40,10 @@ export class WorldSelectorModel {
         return this.storage.newWorldNameCandidate;
     }
 
+    public hasWorld(id: WorldID): boolean {
+        return this.storage.hasWorld(id);
+    }
+
     public newWorld(w: World): void {
         this.storage.storeWorld(w);
         this.worldsBus.push(new Set<World>(this.storage));
