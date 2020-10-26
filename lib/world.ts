@@ -131,6 +131,11 @@ export class World {
         return 0;
     }
 
+    /** Test the equality of two worlds by their ID. */
+    public static equals(w1: World, w2: World): boolean {
+        return w1.id == w2.id;
+    }
+
     public static toMessage(w: World): any {
         return pbRoot.netherlink.World.create({
             id:         uuid.parse(w.id),

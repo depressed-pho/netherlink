@@ -10,15 +10,15 @@ export class WorldSelectorModel {
     private readonly worldsBus: Bacon.Bus<Set<World>>;
     public readonly worlds: Bacon.Property<Set<World>>;
 
-    /* Events indicating the active world has been changed. */
+    /* Events indicating the active world has been either updated or changed. */
     private readonly activeWorldBus: Bacon.Bus<World>;
     public readonly activeWorld: Bacon.Property<World>;
 
     /* Events indicating atlas scales have been changed. */
     private readonly overworldAtlasScaleBus: Bacon.Bus<number>;
-    public readonly overworldAtlasScale: Bacon.Property<number>;
+    private readonly overworldAtlasScale: Bacon.Property<number>;
     private readonly netherAtlasScaleBus: Bacon.Bus<number>;
-    public readonly netherAtlasScale: Bacon.Property<number>;
+    private readonly netherAtlasScale: Bacon.Property<number>;
 
     public constructor(storage: NLStorage) {
         this.storage = storage;

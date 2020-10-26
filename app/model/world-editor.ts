@@ -5,6 +5,8 @@ import { Portal } from 'netherlink/portal';
 import { World } from 'netherlink/world';
 import { WorldSelectorModel } from './world-selector';
 
+const initialCoords: Point = new Point(0, 64, 0);
+
 export class WorldEditorModel {
     private readonly selModel: WorldSelectorModel;
 
@@ -57,13 +59,24 @@ export class WorldEditorModel {
         this.coordsInOverworld    =
             this.coordsInOverworldBus
                 .skipDuplicates(Point.equals)
-                .toProperty(new Point(0, 64, 0));
+                .toProperty(initialCoords);
 
         this.coordsInNetherBus    = new Bacon.Bus<Point>();
         this.coordsInNether       =
             this.coordsInNetherBus
                 .skipDuplicates(Point.equals)
-                .toProperty(new Point(0, 64, 0));
+                .toProperty(initialCoords);
+
+        /* Whenever an active world is switched, deselect portals and
+         * reset the coords to the initial one.
+         */
+        const worldSwitched =
+            this.world
+                .skipDuplicates(World.equals);
+        this.selectedPortalInOverworldBus.plug(worldSwitched.map(_ => null));
+        this.selectedPortalInNetherBus.plug(worldSwitched.map(_ => null));
+        this.coordsInOverworldBus.plug(worldSwitched.map(_ => initialCoords));
+        this.coordsInNetherBus.plug(worldSwitched.map(_ => initialCoords));
 
         /* This is a tricky part. Changes in the selected portal
          * property affects the current coords in the same dimension,
