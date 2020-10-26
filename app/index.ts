@@ -24,6 +24,20 @@ window.addEventListener('DOMContentLoaded', (ev) => {
                 "Any changes you make will be lost.");
     }
 
+    /* We don't use data-open="" because it doesn't invoke
+     * .preventDefault() */
+    const aWhatsThis = document.querySelector("a[data-for='modalWhatsThis']")!;
+    aWhatsThis.addEventListener("click", ev => {
+        ev.preventDefault();
+        $("#modalWhatsThis").foundation("open");
+    });
+
+    const aHowToUse = document.querySelector("a[data-for='modalHowToUse']")!;
+    aHowToUse.addEventListener("click", ev => {
+        ev.preventDefault();
+        $("#modalHowToUse").foundation("open");
+    });
+
     const worldSelM = new WorldSelectorModel(storage);
     const worldSelV = new WorldSelectorView(worldSelM);
 
