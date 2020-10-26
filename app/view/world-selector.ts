@@ -71,7 +71,10 @@ export class WorldSelectorView {
     }
 
     private onSelectWorld() {
-        console.log("onSelectWorld");
+        const active: HTMLOptionElement =
+            this.selWorld.options.item(this.selWorld.selectedIndex)!;
+
+        this.model.activateWorld(active.value);
     }
 
     private async onNewWorld() {
@@ -100,7 +103,8 @@ export class WorldSelectorView {
     }
 
     private async onDeleteWorld() {
-        const active = this.selWorld.options.item(this.selWorld.selectedIndex)!;
+        const active: HTMLOptionElement =
+            this.selWorld.options.item(this.selWorld.selectedIndex)!;
         try {
             await confirm(
                 `Do you really want to delete the world "${active.text}"?` +
