@@ -66,9 +66,6 @@ export class World {
     }
 
     get newPortalColorCandidate(): Color {
-        // hsv: s = 1.0, v = 0.4
-        // hsl: l = 0.2, s = 1.0
-
         /* We generate a color in HSV color model where saturation and
          * value are both fixed at 100% and 40% respectively. Hue is
          * chosen randomly. */
