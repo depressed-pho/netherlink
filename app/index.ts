@@ -10,8 +10,8 @@ import { WorldSelectorView } from './view/world-selector';
 import { PortalListView } from './view/portal-list';
 import { AtlasView } from './view/atlas';
 import { CoordsInfoView } from './view/coords-info';
-
-$(document).foundation();
+import htmlWhatsThis from '../assets/whats-this.html';
+import htmlHowToUse from '../assets/how-to-use.html';
 
 window.addEventListener('DOMContentLoaded', (ev) => {
     const storage: NLStorage = LocalStorage.instance;
@@ -23,6 +23,11 @@ window.addEventListener('DOMContentLoaded', (ev) => {
                 "data in its local storage, possibly because it's in a private mode. " +
                 "Any changes you make will be lost.");
     }
+
+    const body = document.querySelector("body")! as HTMLBodyElement;
+    body.insertAdjacentHTML("beforeend", htmlWhatsThis);
+    body.insertAdjacentHTML("beforeend", htmlHowToUse);
+    $(document).foundation();
 
     /* We don't use data-open="" because it doesn't invoke
      * .preventDefault() */
