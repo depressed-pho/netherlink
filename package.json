@@ -2,6 +2,10 @@
   "name": "netherlink",
   "version": "1.0.0",
   "description": "Web app to plan nether portal setups in Minecraft",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/depressed-pho/netherlink.git"
+  },
   "scripts": {
     "build": "webpack --progress --config webpack.prod.js",
     "clean": "rimraf dist",
@@ -43,6 +47,7 @@
     "css-loader": "^4.2.2",
     "css-minimizer-webpack-plugin": "^1.1.5",
     "file-loader": "^6.1.0",
+    "gh-pages": "^3.1.0",
     "html-loader": "^1.3.1",
     "html-webpack-plugin": "^4.5.0",
     "mini-css-extract-plugin": "^0.10.0",
