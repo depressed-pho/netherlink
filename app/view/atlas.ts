@@ -121,14 +121,10 @@ export class AtlasView<D extends Dimension> {
 
                         case "pinch":
                             if (s0) {
-                                const min  = Number(this.fldScale.min);
-                                const max  = Number(this.fldScale.max);
-                                const step = Number(this.fldScale.step);
-                                const ds   = hmEvent.scale;
-                                const s1   = s0 * ds;
-                                const s1q  = Math.round(s1 * (1/step)) / (1/step); // quantized
-                                const s1qr = Math.min(Math.max(s1q, min), max); // restricted
-                                return [s0, [new Bacon.Next(s1qr)]];
+                                const ds = hmEvent.scale;
+                                const s1 = this.recalcScale(s0, ds);
+
+                                return [s0, [new Bacon.Next(s1)]];
                             }
                     }
                 }
@@ -168,6 +164,26 @@ export class AtlasView<D extends Dimension> {
             .onValue(((c: Point) => {
                 this.model.currentCoords(dimension, c);
             }) as any);
+    }
+
+    private recalcScale(s0: number, ds: number): number {
+        const min  = Number(this.fldScale.min);
+        const max  = Number(this.fldScale.max);
+        const step = Number(this.fldScale.step);
+        /* I found that the pinching scale was a bit too much. */
+        const dsc  = 0.7;
+        const ds1  = ds < 1.0 ? 1.0 - (1.0 - ds) * dsc
+                   :                  (ds - 1.0) * dsc + 1.0;
+        /* We need to map the range [min, max] to [1, 2], apply the
+         * pinching scale, and then remap it back to [min, max]. If we
+         * simply do s0*ds here, the scaling would be non-uniform.
+         */
+        const rs0  = (s0 - min) / (max - min) + 1; // remapped; assumes min >= 0
+        const rs1  = rs0 * ds1;
+        const s1   = (rs1 - 1) * (max - min) + min; // mapped back
+        const s1q  = Math.round(s1 / step) * step; // quantized
+        const s1qr = Math.min(Math.max(s1q, min), max); // restricted
+        return s1qr;
     }
 
     public get fragment(): DocumentFragment {

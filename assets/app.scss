@@ -9,3 +9,9 @@
 @import "utils.scss";
 
 @include foundation-everything;
+
+/* For browsers that don't support <input type="range" orient="vertical"> */
+input[type=range][orient=vertical] {
+    writing-mode: bt-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* WebKit */
+}

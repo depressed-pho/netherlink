@@ -1,7 +1,18 @@
 .nl-atlas-container {
     position: relative;
 
+    canvas.atlas {
+        z-index: 1;
+        /* We need to remove the canvas from the normal document flow,
+         * because we really don't want its parent to determine its
+         * size based on the size of our canvas. */
+        position: absolute;
+
+        cursor: move;
+    }
+
     .atlas-scale-container {
+        z-index: 2;
         position: absolute;
         margin: 0.5em 0.5em;
 
@@ -20,14 +31,5 @@
              * factor is. */
             transform: rotateX(180deg);
         }
-    }
-
-    canvas.atlas {
-        cursor: move;
-
-        /* We need to remove the canvas from the normal document flow,
-         * because we really don't want its parent to determine its
-         * size based on the size of our canvas. */
-        position: absolute;
     }
 }
