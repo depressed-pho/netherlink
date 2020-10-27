@@ -74,7 +74,7 @@ function attach(id: string, frag: DocumentFragment) {
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
         try {
-            const registration = await navigator.serviceWorker.register('/service-worker.js');
+            const registration = await navigator.serviceWorker.register('service-worker.js');
             console.log('Service worker registered: ', registration);
         }
         catch (e) {
