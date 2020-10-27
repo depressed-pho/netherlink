@@ -1,0 +1,20 @@
+{
+  "icons": [
+    {
+      "src": "assets/icon_256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "name": "Netherlink",
+  "short_name": "Netherlink",
+  "orientation": "landscape",
+  "display": "standalone",
+  "start_url": ".",
+  "description": "Tool for planning nether portal setups in Minecraft"
+}
