@@ -28,7 +28,7 @@ export class Portal<D extends Dimension> {
         /* First, calculate the coords of the nominal destination. X
          * and Z are multiplied or divided by 8, and Y remains
          * unchanged. */
-        const nominal: Point = this.dimension.scaleForPortal(this.location);
+        const nominal: Point = this.nominalDestination;
 
         /* Then search for destination candidates based on chunks. The
          * bounding area is 17x17 chunks in the Overworld and 3x3
@@ -57,8 +57,12 @@ export class Portal<D extends Dimension> {
         return closestP;
     }
 
+    public get nominalDestination(): Point {
+        return this.dimension.scaleForPortal(this.location);
+    }
+
     public searchArea(): [Point, Point] {
-        const nominal: Point = this.dimension.scaleForPortal(this.location);
+        const nominal: Point = this.nominalDestination;
         return this.dimension.portalOpposite.portalSearchArea(nominal);
     }
 

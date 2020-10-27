@@ -264,21 +264,45 @@ export class AtlasView<D extends Dimension> {
                 const [areaTopLeft, areaBottomRight] = portal.searchArea();
 
                 if (isAreaVisible(areaTopLeft, areaBottomRight)) {
+                    /* The square for the area. */
+                    const isSelected = selectedThere && portal.equals(selectedThere);
+
                     const tlA = worldToAtlas(areaTopLeft);
                     const brA = worldToAtlas(areaBottomRight);
                     ctx.lineWidth   = 1;
-                    ctx.strokeStyle = selectedThere && portal.equals(selectedThere)
-                        ? portal.color.fade(0.6).string()
-                        : portal.color.fade(0.7).string();
-                    ctx.fillStyle   = selectedThere && portal.equals(selectedThere)
-                        ? portal.color.fade(0.8).string()
-                        : portal.color.fade(0.9).string();
+                    ctx.strokeStyle = isSelected ? portal.color.fade(0.6).string()
+                                    :              portal.color.fade(0.7).string();
+                    ctx.fillStyle   = isSelected ? portal.color.fade(0.8).string()
+                                    :              portal.color.fade(0.9).string();
                     ctx.fillRect(
                         Math.floor(tlA.x), Math.floor(tlA.z),
                         Math.floor(brA.x - tlA.x), Math.floor(brA.z - tlA.z));
                     ctx.strokeRect(
                         Math.floor(tlA.x), Math.floor(tlA.z),
                         Math.floor(brA.x - tlA.x), Math.floor(brA.z - tlA.z));
+
+                    /* The cross-hair for the nominal destination. */
+                    const nomA   = worldToAtlas(portal.nominalDestination);
+                    const radius = 6; // px
+                    ctx.lineWidth = 2;
+
+                    ctx.beginPath();
+                    ctx.moveTo(nomA.x - radius/2, nomA.z - radius/2);
+                    ctx.lineTo(nomA.x + radius/2, nomA.z + radius/2);
+
+                    ctx.moveTo(nomA.x + radius/2, nomA.z - radius/2);
+                    ctx.lineTo(nomA.x - radius/2, nomA.z + radius/2);
+                    ctx.stroke();
+
+                    /* And the label on the top-left corner. */
+                    const padding = 3; // px
+                    const metrics = ctx.measureText(portal.name);
+                    ctx.fillStyle = isSelected ? portal.color.fade(0.4).string()
+                                  :              portal.color.fade(0.5).string();
+                    ctx.fillText(
+                        portal.name,
+                        Math.floor(tlA.x + padding),
+                        Math.floor(tlA.z + padding + metrics.actualBoundingBoxAscent));
                 }
             }
 
@@ -333,8 +357,8 @@ export class AtlasView<D extends Dimension> {
                     Math.abs(metrics.actualBoundingBoxAscent ) +
                     Math.abs(metrics.actualBoundingBoxDescent);
                 ctx.fillStyle = isSelected ? 'white'
-                    : isLinked   ? portal.color.mix(Color("white"), 0.8).string()
-                    :              portal.color.string();
+                              : isLinked   ? portal.color.mix(Color("white"), 0.8).string()
+                              :              portal.color.string();
                 ctx.fillRect(
                     Math.floor(centerA.x          - width/2 - padding),
                     Math.floor(centerA.z - margin - height  - padding*2 - border),
@@ -352,8 +376,8 @@ export class AtlasView<D extends Dimension> {
 
                 /* Label text */
                 ctx.fillStyle = isSelected ? portal.color.string()
-                    : isLinked   ? portal.color.mix(Color("black"), 0.2).string()
-                    : 'white';
+                              : isLinked   ? portal.color.mix(Color("black"), 0.2).string()
+                              : 'white';
                 ctx.fillText(
                     portal.name,
                     Math.floor(centerA.x          - width/2),

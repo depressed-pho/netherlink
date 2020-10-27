@@ -135,6 +135,8 @@ export class CoordsInfoView<D extends Dimension> {
                     }
                     else {
                         // The linkage is suboptimal.
+                        const nominal = linked.nominalDestination;
+
                         const oneWay = this.divInfo.querySelector("template[data-for='one-way'][data-reason='suboptimal']")! as HTMLTemplateElement;
 
                         const name = oneWay.content.querySelector("a[data-for='name']")! as HTMLAnchorElement;
@@ -144,6 +146,13 @@ export class CoordsInfoView<D extends Dimension> {
                         name.addEventListener("click", ev => {
                             ev.preventDefault();
                             this.onPortalLinkClicked(reflected);
+                        });
+
+                        const nomA = oneWay.content.querySelector("a[data-for='nominal']")! as HTMLAnchorElement;
+                        nomA.title = String(nominal);
+                        nomA.addEventListener("click", ev => {
+                            ev.preventDefault();
+                            this.onCoordsLinkClicked(this.dimension, nominal);
                         });
 
                         this.divInfo.appendChild(oneWay.content);
@@ -210,6 +219,7 @@ export class CoordsInfoView<D extends Dimension> {
                     const worldWithV = w.clone();
                     worldWithV.portals(virtualPortal.dimension).add(virtualPortal);
 
+                    const nominal   = linked.nominalDestination;
                     const reflected = linked.linkedPortal(worldWithV)!;
                     if (reflected.equals(virtualPortal)) {
                         // It will actually be bidirectional.
@@ -217,6 +227,13 @@ export class CoordsInfoView<D extends Dimension> {
                         if (oldLink) {
                             // But there was a suboptimal linkage before.
                             const override = this.divInfo.querySelector("template[data-for='override']")! as HTMLTemplateElement;
+
+                            const nomA = override.content.querySelector("a[data-for='nominal']")! as HTMLAnchorElement;
+                            nomA.title = String(nominal);
+                            nomA.addEventListener("click", ev => {
+                                ev.preventDefault();
+                                this.onCoordsLinkClicked(this.dimension, nominal);
+                            });
 
                             const name = override.content.querySelector("span[data-for='name']")! as HTMLSpanElement;
                             name.textContent = linked.name;
@@ -250,6 +267,13 @@ export class CoordsInfoView<D extends Dimension> {
                         name.addEventListener("click", ev => {
                             ev.preventDefault();
                             this.onPortalLinkClicked(reflected);
+                        });
+
+                        const nomA = oneWay.content.querySelector("a[data-for='nominal']")! as HTMLAnchorElement;
+                        nomA.title = String(nominal);
+                        nomA.addEventListener("click", ev => {
+                            ev.preventDefault();
+                            this.onCoordsLinkClicked(this.dimension, nominal);
                         });
 
                         this.divInfo.appendChild(oneWay.content);

@@ -38,8 +38,9 @@
             data-for="name"></span>, this portal is one-way.
           </template>
           <template data-for="one-way" data-reason="suboptimal">
-            But since <a data-for="name"></a> is closer to its nominal
-            destination, this portal is one-way.
+            But since <a data-for="name"></a> is closer to its <a
+            data-for="nominal">nominal destination</a>, this portal is
+            one-way.
           </template>
         </template>
 
@@ -64,13 +65,15 @@
             data-for="name"></span>, the portal will be one-way.
           </template>
           <template data-for="one-way" data-reason="suboptimal">
-            But since <a data-for="name"></a> is closer to its nominal
-            destination, the portal will be one-way.
+            But since <a data-for="name"></a> is closer to its <a
+            data-for="nominal">nominal destination</a>, the portal
+            will be one-way.
           </template>
           <template data-for="override">
-            Since it's closer to the nominal destination of <span
-            data-for="name"></span>, its current linkage with <a
-            data-for="old-name"></a> will be overridden.
+            Since it's closer to the <a data-for="nominal">nominal
+            destination</a> of <span data-for="name"></span>, its
+            current linkage with <a data-for="old-name"></a> will be
+            overridden.
           </template>
         </template>
 
