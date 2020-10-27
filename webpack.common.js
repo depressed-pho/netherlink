@@ -47,7 +47,7 @@ module.exports = {
         new WebpackPwaManifest({
             name: 'Netherlink',
             description: 'Tool for planning nether portal setups in Minecraft',
-            orientation: 'omit',
+            orientation: 'landscape',
             display: 'standalone',
             fingerprints: false,
             ios: true,
