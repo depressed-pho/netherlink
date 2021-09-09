@@ -25,7 +25,7 @@ export class PortalListView<D extends Dimension> {
 
     private readonly world: Bacon.Property<World>;
     private readonly portals: Bacon.Property<Set<Portal<D>>>;
-    private readonly selectedPortal: Bacon.Property<Portal<D>>;
+    private readonly selectedPortal: Bacon.Property<Portal<D>|null>;
 
     public constructor(dimension: D, model: WorldEditorModel) {
         this.dimension = dimension;
@@ -62,7 +62,11 @@ export class PortalListView<D extends Dimension> {
             this.btnDelete.disabled = sel == null;
         });
         const deleteClicked = Bacon.fromEvent(this.btnDelete, 'click');
-        this.selectedPortal.sampledBy(deleteClicked).onValue(sel => this.onDeletePortal(sel));
+        this.selectedPortal.sampledBy(deleteClicked).onValue(sel => {
+            if (sel) {
+                this.onDeletePortal(sel);
+            }
+        });
 
         /* The "Edit portal" button is enabled when a portal is
          * selected. */
@@ -71,7 +75,11 @@ export class PortalListView<D extends Dimension> {
             this.btnEdit.disabled = sel == null;
         });
         const editClicked = Bacon.fromEvent(this.btnEdit, 'click');
-        this.selectedPortal.sampledBy(editClicked).onValue(sel => this.onEditPortal(sel));
+        this.selectedPortal.sampledBy(editClicked).onValue(sel => {
+            if (sel) {
+                this.onEditPortal(sel);
+            }
+        });
 
         /* The portal list table should be synchronized with one of
          * the portal lists, with sampling the value of the property
@@ -229,7 +237,7 @@ export class PortalListView<D extends Dimension> {
         }
     }
 
-    private highlight(p: Portal<D>) {
+    private highlight(p: Portal<D>|null) {
         const coords = p ? p.location.toString() : undefined;
         for (const tr of this.tbody.querySelectorAll("tr")) {
             if (tr.dataset.coords == coords) {

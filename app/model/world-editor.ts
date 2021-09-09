@@ -123,7 +123,7 @@ export class WorldEditorModel {
     }
 
     /* Events indicating a different portal has been selected. */
-    public selectedPortal<D extends Dimension>(dimension: D): Bacon.Property<Portal<D>> {
+    public selectedPortal<D extends Dimension>(dimension: D): Bacon.Property<Portal<D>|null> {
         if (dimension instanceof Overworld) {
             /* Now we know D is Overworld but TypeScript doesn't allow
              * us to do this without coercing to any. Possibly a
