@@ -14,7 +14,8 @@ module.exports = {
     ],
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'dist'),
+        assetModuleFilename: "assets/[name][ext]"
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.js'],
@@ -62,7 +63,8 @@ module.exports = {
                     size: '256x256',
                     destination: 'assets'
                 }
-            ]
+            ],
+            publicPath: "."
         }),
         new WorkboxPlugin.GenerateSW({
             cacheId: 'netherlink',
@@ -85,15 +87,7 @@ module.exports = {
             },
             {
                 test: /\.(eot|svg|ttf|woff)$/i,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            limit: 10000,
-                            name: "assets/[name].[ext]"
-                        }
-                    }
-                ]
+                type: "asset/resource"
             },
             {
                 test: /\.html$/i,
@@ -111,18 +105,20 @@ module.exports = {
                 test: /\.proto$/i,
                 use: [
                     {
-                        loader: 'protobuf-preloader'
+                        loader: 'protobufjs-loader'
                         /* The loader doesn't support pbts so we
                          * have to resort to the raw js
                          * mode. There's a PR but it hasn't been
                          * merged for years:
                          * https://github.com/kmontag/protobufjs-loader/pull/2
                          *
-                         * But the real problem is that pbts
-                         * generates .d.ts rather than the real
+                         * pbts generates .d.ts rather than the real
                          * script, which means we still need .js
-                         * too. Loaders can't handle this
-                         * situation well.
+                         * too. Loaders can't handle this situation well so
+                         * we have to resort to raw js files. protobuf-ts
+                         * (https://github.com/timostamm/protobuf-ts) looks
+                         * like a very promising alternative but there
+                         * doesn't seem to be a webpack loader for that.
                          */,
                         options: {
                             pbjsArgs: ['--wrap', 'es6']

@@ -9,11 +9,8 @@ module.exports = merge(common, {
     optimization: {
         usedExports: true, // See https://webpack.js.org/guides/tree-shaking/
         minimizer: [
-            new CssMinimizerPlugin({
-                sourceMap: true
-            }),
+            new CssMinimizerPlugin(),
             new TerserWebpackPlugin({
-                sourceMap: true,
                 terserOptions: {
                     compress: {
                         warnings: true
