@@ -12,6 +12,8 @@ import { AtlasView } from './view/atlas';
 import { CoordsInfoView } from './view/coords-info';
 import htmlWhatsThis from '../assets/whats-this.html';
 import htmlHowToUse from '../assets/how-to-use.html';
+import htmlChanges from "../assets/changes.html";
+import htmlNews from "../NEWS.md";
 
 window.addEventListener('DOMContentLoaded', (ev) => {
     const storage: NLStorage = LocalStorage.instance;
@@ -27,6 +29,11 @@ window.addEventListener('DOMContentLoaded', (ev) => {
     const body = document.querySelector("body")! as HTMLBodyElement;
     body.insertAdjacentHTML("beforeend", htmlWhatsThis);
     body.insertAdjacentHTML("beforeend", htmlHowToUse);
+    body.insertAdjacentHTML("beforeend", htmlChanges);
+
+    const modalChanges = document.getElementById("modalChanges")! as HTMLDivElement;
+    modalChanges.insertAdjacentHTML("beforeend", htmlNews);
+
     $(document).foundation();
 
     /* We don't use data-open="" because it doesn't invoke
@@ -41,6 +48,12 @@ window.addEventListener('DOMContentLoaded', (ev) => {
     aHowToUse.addEventListener("click", ev => {
         ev.preventDefault();
         $("#modalHowToUse").foundation("open");
+    });
+
+    const aChanges = document.querySelector("a[data-for='modalChanges']")!;
+    aChanges.addEventListener("click", ev => {
+        ev.preventDefault();
+        $("#modalChanges").foundation("open");
     });
 
     const worldSelM = new WorldSelectorModel(storage);

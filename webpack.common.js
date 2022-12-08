@@ -20,7 +20,7 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.tsx', '.js'],
         alias: {
-            'netherlink': path.resolve(__dirname, 'lib')
+            "netherlink": path.resolve(__dirname, "lib")
         }
     },
     plugins: [
@@ -92,13 +92,14 @@ module.exports = {
             {
                 test: /\.html$/i,
                 use: [
-                    {
-                        loader: 'html-loader',
-                        options: {
-                            minimize: true,
-                            esModule: true
-                        }
-                    }
+                    { loader: "html-loader" }
+                ]
+            },
+            {
+                test: /.md$/,
+                use: [
+                    { loader: "html-loader" },
+                    { loader: "markdown-loader" }
                 ]
             },
             {
@@ -106,13 +107,7 @@ module.exports = {
                 use: [
                     {
                         loader: 'protobufjs-loader'
-                        /* The loader doesn't support pbts so we
-                         * have to resort to the raw js
-                         * mode. There's a PR but it hasn't been
-                         * merged for years:
-                         * https://github.com/kmontag/protobufjs-loader/pull/2
-                         *
-                         * pbts generates .d.ts rather than the real
+                        /* pbts generates .d.ts rather than the real
                          * script, which means we still need .js
                          * too. Loaders can't handle this situation well so
                          * we have to resort to raw js files. protobuf-ts

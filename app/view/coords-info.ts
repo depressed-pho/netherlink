@@ -57,8 +57,8 @@ export class CoordsInfoView<D extends Dimension> {
         }
 
         /* The Y coordinate input field should have a constraint. */
-        this.fldY.max = String(dimension.portalHeightLimit);
-        this.fldY.min = String(0);
+        this.fldY.min = String(dimension.minAltitude);
+        this.fldY.max = String(dimension.maxAltitude);
 
         /* The info field is updated whenever the set of portals, a
          * selected portal, or coords (for this dimension) changes,

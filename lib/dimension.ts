@@ -2,14 +2,10 @@ import pbRoot from './world.proto';
 import { Chunk } from 'netherlink/chunk';
 import { Point } from 'netherlink/point';
 
-export class Dimension {
-    public get name(): string {
-        throw new Error("Not implemented");
-    }
-
-    public get portalHeightLimit(): number {
-        throw new Error("Not implemented");
-    }
+export abstract class Dimension {
+    public abstract get name(): string;
+    public abstract get minAltitude(): number;
+    public abstract get maxAltitude(): number;
 
     public toString(): string {
         return this.name;
@@ -17,16 +13,12 @@ export class Dimension {
 
     /** Get the opposite dimension for a Nether portal, or throw if no
      * such dimension exists. */
-    public get portalOpposite(): Dimension {
-        throw new Error("Not implemented");
-    }
+    public abstract get portalOpposite(): Dimension;
 
     /** Calculate the nominal coordinates for the "opposite" side of a
      * Nether portal. The point is assumed to be integral.
      */
-    public scaleForPortal(from: Point): Point {
-        throw new Error("Not implemented");
-    }
+    public abstract scaleForPortal(from: Point): Point;
 
     /** Like scaleForPortal() but this one also applies a restriction
      * for creating new portals.
@@ -34,7 +26,7 @@ export class Dimension {
     public scaleAndRestrictForPortal(from: Point): Point {
         const scaled = this.scaleForPortal(from);
         const minY   = 70;
-        const maxY   = this.portalOpposite.portalHeightLimit - 10;
+        const maxY   = this.portalOpposite.maxAltitude - 10;
         return new Point(
             scaled.x,
             Math.min(Math.max(scaled.y, minY), maxY),
@@ -45,9 +37,7 @@ export class Dimension {
      * this dimension, based on the nominal destination. The area is
      * represented as [p1, p2).
      */
-    public portalSearchArea(nominal: Point): [Point, Point] {
-        throw new Error("Not implemented");
-    }
+    public abstract portalSearchArea(nominal: Point): [Point, Point];
 
     public static toMessage(d: Dimension): number {
         /* This is very suboptimal, but what else can we do? */
@@ -82,8 +72,12 @@ export class Overworld extends Dimension {
         return "Overworld";
     }
 
-    public get portalHeightLimit(): number {
-        return 256;
+    public override get minAltitude(): number {
+        return -64;
+    }
+
+    public override get maxAltitude(): number {
+        return 320;
     }
 
     public get portalOpposite(): Nether {
@@ -113,7 +107,11 @@ export class Nether extends Dimension {
         return "Nether";
     }
 
-    public get portalHeightLimit(): number {
+    public override get minAltitude(): number {
+        return 0;
+    }
+
+    public override get maxAltitude(): number {
         return 128;
     }
 
